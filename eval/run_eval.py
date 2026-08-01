@@ -83,14 +83,17 @@ def main() -> None:
         mon.label(task)
         t0 = time.time()
 
+        safe_label = label.replace(":", "-").replace("/", "-")
+        ckpt = T.Checkpoint(out_dir / "checkpoints" / f"{safe_label}-{task}.jsonl")
+
         if task.startswith("belebele_"):
             lang = {"hrv": "hrv_Latn", "eng": "eng_Latn"}[task.split("_")[1]]
             ds = T.load_belebele(lang, a.limit_belebele, a.seed)
-            res = T.score_belebele(backend, ds)
+            res = T.score_belebele(backend, ds, ckpt=ckpt)
             print(f"    -> accuracy {res['accuracy']:.1%}  parse {res['parse_rate']:.1%}  n={res['n']}")
         elif task == "humaneval":
             ds = T.load_humaneval(a.limit_humaneval, a.seed)
-            res = T.score_humaneval(backend, ds)
+            res = T.score_humaneval(backend, ds, ckpt=ckpt)
             print(f"    -> pass@1 {res['pass@1']:.1%}  n={res['n']}")
         else:
             raise SystemExit(f"unknown task {task!r}")

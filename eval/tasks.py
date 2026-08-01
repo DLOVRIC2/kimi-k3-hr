@@ -16,12 +16,57 @@ from __future__ import annotations
 
 import json
 import multiprocessing
+import pathlib
 import re
 import subprocess
 import sys
 import tempfile
 import textwrap
 from dataclasses import dataclass
+
+
+class Checkpoint:
+    """Append-only per-item log, so a long run survives being interrupted.
+
+    Results were previously written once, at the end. A four-hour sweep that died
+    at the three-hour mark therefore wrote nothing -- which happened twice, when a
+    tool timeout took a backgrounded job with it. Each item is now flushed as it
+    completes and replayed on restart.
+
+    Keyed on the task's own item id (Belebele question_number, HumanEval task_id)
+    rather than loop position, so resuming is correct even if the shuffle or the
+    limit changes between attempts.
+    """
+
+    def __init__(self, path: pathlib.Path | str | None):
+        self.path = pathlib.Path(path) if path else None
+        self.done: dict[str, dict] = {}
+        if self.path and self.path.exists():
+            for line in self.path.read_text().splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    # A run killed mid-write leaves one truncated final line.
+                    # Dropping it is correct: that item simply gets redone.
+                    continue
+                self.done[str(rec["id"])] = rec
+        if self.path:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def __len__(self) -> int:
+        return len(self.done)
+
+    def append(self, rec: dict) -> None:
+        self.done[str(rec["id"])] = rec
+        if self.path:
+            with open(self.path, "a") as f:
+                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                f.flush()
+
+    def get(self, item_id) -> dict | None:
+        return self.done.get(str(item_id))
 
 BELEBELE_PROMPT = """Passage:
 {passage}
@@ -71,9 +116,20 @@ def _is_echo(text: str, prompt: str) -> bool:
     return bool(head) and (head.startswith("Passage:") or head[:40] in prompt[:200])
 
 
-def score_belebele(backend, ds, log=print) -> dict:
+def score_belebele(backend, ds, log=print, ckpt: Checkpoint | None = None) -> dict:
+    # `ckpt or Checkpoint(None)` is WRONG here: Checkpoint defines __len__, so an
+    # empty one is falsy and would be silently replaced by a no-op -- disabling
+    # checkpointing on precisely the first run, the one it exists to protect.
+    if ckpt is None:
+        ckpt = Checkpoint(None)
     results: list[ItemResult] = []
+    if len(ckpt):
+        log(f"    resuming: {len(ckpt)} items already done")
     for i, row in enumerate(ds):
+        prior = ckpt.get(row["question_number"])
+        if prior is not None:
+            results.append(ItemResult(**prior))
+            continue
         prompt = BELEBELE_PROMPT.format(
             passage=row["flores_passage"], question=row["question"],
             a1=row["mc_answer1"], a2=row["mc_answer2"],
@@ -90,12 +146,14 @@ def score_belebele(backend, ds, log=print) -> dict:
         m = None if echoed else _DIGIT.search(g.text)
         parsed = m is not None
         correct = parsed and int(m.group()) == int(row["correct_answer_num"])
-        results.append(ItemResult(
+        r = ItemResult(
             id=str(row["question_number"]), correct=correct, parsed=parsed,
             raw=g.text.strip()[:40], gen_tokens=g.gen_tokens,
             decode_tok_s=g.decode_tok_s, thinking_chars=g.thinking_chars,
             truncated=g.truncated, echoed=echoed,
-        ))
+        )
+        results.append(r)
+        ckpt.append(r.__dict__)
         if (i + 1) % 25 == 0:
             acc = sum(r.correct for r in results) / len(results)
             log(f"    {i+1}/{len(ds)}  acc {acc:.1%}")
@@ -191,21 +249,34 @@ def _run_one(code: str, test: str, entry_point: str, timeout: int = 15) -> tuple
         return False, f"harness:{type(e).__name__}"
 
 
-def score_humaneval(backend, ds, log=print) -> dict:
+def score_humaneval(backend, ds, log=print, ckpt: Checkpoint | None = None) -> dict:
+    # `ckpt or Checkpoint(None)` is WRONG here: Checkpoint defines __len__, so an
+    # empty one is falsy and would be silently replaced by a no-op -- disabling
+    # checkpointing on precisely the first run, the one it exists to protect.
+    if ckpt is None:
+        ckpt = Checkpoint(None)
     results = []
+    if len(ckpt):
+        log(f"    resuming: {len(ckpt)} items already done")
     for i, row in enumerate(ds):
+        prior = ckpt.get(row["task_id"])
+        if prior is not None:
+            results.append(prior)
+            continue
         g = backend.generate(HUMANEVAL_PROMPT.format(prompt=row["prompt"]),
                              max_tokens=getattr(backend, "code_budget", 2048))
         code = extract_code(g.text, row["prompt"], row["entry_point"])
         ok, reason = _run_one(code, row["test"], row["entry_point"])
-        results.append({
+        rec = {
             "id": row["task_id"], "correct": ok,
             # A truncated generation is a budget failure, not a coding failure —
             # label it so it can't be silently read as "the model can't code".
             "reason": "truncated" if (g.truncated and not ok) else reason,
             "gen_tokens": g.gen_tokens, "decode_tok_s": g.decode_tok_s,
             "truncated": g.truncated,
-        })
+        }
+        results.append(rec)
+        ckpt.append(rec)
         if (i + 1) % 10 == 0:
             log(f"    {i+1}/{len(ds)}  pass@1 {sum(r['correct'] for r in results)/len(results):.1%}")
 
