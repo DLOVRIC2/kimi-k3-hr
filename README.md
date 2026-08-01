@@ -38,6 +38,17 @@ costs elsewhere.
 
 The control arm matters. Without it there is no claim, only a model.
 
+**Every source is public and ungated** (`wikimedia/wikipedia` per-language configs,
+`codeparrot/github-code-clean`), so these builds are reproducible by anyone. A corpus
+drawn from private repositories would make the result unverifiable, which defeats the
+purpose of publishing it.
+
+Worth stating plainly, since it comes up: **REAP cannot leak a calibration corpus.** It
+deletes experts, it does not train — surviving weights are bit-identical to Moonshot's
+originals and no gradient ever touches them. `reap_saliency.npz` is aggregate scores and
+`reap_plan.json` is a list of integers; neither has the bandwidth to encode source text.
+The corpus is public here for reproducibility, not because privacy required it.
+
 ## Method
 
 ```bash

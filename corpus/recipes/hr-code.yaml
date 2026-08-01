@@ -1,12 +1,17 @@
 # HYPOTHESIS ARM — Croatian + code.
 #
-# Their own ablation found Chinese+code beat Chinese-only for Chinese generation:
-# keeping the code cluster helps a target language rather than competing with it.
+# Their ablation found Chinese+code beat Chinese-only for Chinese generation:
+# keeping the code cluster HELPS a target language rather than competing for slots.
 # This tests whether that holds for a Slavic low-resource language.
 #
-# Russian and Polish are included deliberately, not as filler — if Croatian rides
-# the Slavic cluster, reinforcing its neighbours should lift it too. Drop them in
-# an ablation to isolate the effect.
+# Serbian at 15% is deliberate, not filler. German-Spanish overlapped at 2.2x chance,
+# so related languages share experts. If Croatian rides the Slavic cluster,
+# reinforcing its nearest neighbour should lift it too. Drop this source for the
+# ablation that isolates the effect.
+#
+# Code is Python-all rather than multi-language for simplicity; Python-multi
+# overlapped at 57.2%, so one language preserves most of the cluster. Broadening
+# is one extra source if you want a closer match to the reference mix.
 name: hr-code
 sources:
   - tag: hr
@@ -16,19 +21,10 @@ sources:
     config: 20231101.hr
   - tag: code
     ratio: 0.35
-    kind: local
-    path: ~/code/workspace
-    glob: "**/*.py"
-    exclude:
-      - "/.venv/"
-      - "/site-packages/"
-      - "/node_modules/"
-      - "/__pycache__/"
-      - "/migrations/"
-      - "/.git/"
-      - "/build/"
-      - "/dist/"
-      - "/.mypy_cache/"
+    kind: hf
+    dataset: codeparrot/github-code-clean
+    config: Python-all
+    text_field: code
     min_chars: 400
   - tag: sl_neighbours
     ratio: 0.15

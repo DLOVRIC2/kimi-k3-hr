@@ -1,26 +1,21 @@
-# CONTROL ARM — replicates the reference calibration mix used by the published
+# CONTROL ARM — reproduces the reference calibration mix used by the published
 # REAP builds (40% code / 30% English / 15% Chinese / 15% other languages).
 #
-# You need this. Without a control you cannot claim a Croatian-targeted build is
-# better, only that it exists. Build this first, then hr-code, and compare on the
-# same probe set.
+# You need this arm. Without a control you cannot claim a Croatian-targeted build
+# is better, only that it exists. Both arms come from this same pipeline, so the
+# corpus is the ONLY variable between them.
+#
+# Every source is public and ungated, so anyone can reproduce these builds exactly.
+# That is deliberate: a corpus drawn from private repos makes the result
+# unverifiable, which defeats the point of publishing it.
 name: control-reference-mix
 sources:
   - tag: code
     ratio: 0.40
-    kind: local
-    path: ~/code/workspace
-    glob: "**/*.py"
-    exclude:
-      - "/.venv/"
-      - "/site-packages/"
-      - "/node_modules/"
-      - "/__pycache__/"
-      - "/migrations/"
-      - "/.git/"
-      - "/build/"
-      - "/dist/"
-      - "/.mypy_cache/"
+    kind: hf
+    dataset: codeparrot/github-code-clean
+    config: Python-all
+    text_field: code
     min_chars: 400
   - tag: en
     ratio: 0.30
