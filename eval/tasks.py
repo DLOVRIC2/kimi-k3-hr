@@ -46,6 +46,7 @@ class ItemResult:
     decode_tok_s: float = 0.0
     thinking_chars: int = 0
     truncated: bool = False
+    echoed: bool = False
 
 
 def load_belebele(config: str, limit: int | None, seed: int):
@@ -57,6 +58,17 @@ def load_belebele(config: str, limit: int | None, seed: int):
 
 
 _DIGIT = re.compile(r"[1-4]")
+
+
+def _is_echo(text: str, prompt: str) -> bool:
+    """Did the model repeat the prompt back instead of answering?
+
+    A distinct failure mode from a wrong answer: the model never engaged with
+    the question at all. Scoring it as merely "incorrect" hides that, so it is
+    counted separately. Observed at ~10% on K3 and gpt-oss:20b.
+    """
+    head = text.strip()[:60]
+    return bool(head) and (head.startswith("Passage:") or head[:40] in prompt[:200])
 
 
 def score_belebele(backend, ds, log=print) -> dict:
@@ -72,14 +84,17 @@ def score_belebele(backend, ds, log=print) -> dict:
         # reasoning model's thinking and returns empty content; too high makes
         # a non-reasoning model write prose for 98 seconds per item.
         g = backend.generate(prompt, max_tokens=getattr(backend, "answer_budget", 512))
-        m = _DIGIT.search(g.text)
+        echoed = _is_echo(g.text, prompt)
+        # An echo never contains a real answer; any digit in it is incidental
+        # text from the restated passage, so don't let it score by luck.
+        m = None if echoed else _DIGIT.search(g.text)
         parsed = m is not None
         correct = parsed and int(m.group()) == int(row["correct_answer_num"])
         results.append(ItemResult(
             id=str(row["question_number"]), correct=correct, parsed=parsed,
             raw=g.text.strip()[:40], gen_tokens=g.gen_tokens,
             decode_tok_s=g.decode_tok_s, thinking_chars=g.thinking_chars,
-            truncated=g.truncated,
+            truncated=g.truncated, echoed=echoed,
         ))
         if (i + 1) % 25 == 0:
             acc = sum(r.correct for r in results) / len(results)
@@ -93,6 +108,7 @@ def score_belebele(backend, ds, log=print) -> dict:
         "mean_tok_s": sum(r.decode_tok_s for r in results) / n if n else 0.0,
         "mean_thinking_chars": sum(r.thinking_chars for r in results) / n if n else 0.0,
         "truncated_rate": sum(r.truncated for r in results) / n if n else 0.0,
+        "echo_rate": sum(r.echoed for r in results) / n if n else 0.0,
         "items": [r.__dict__ for r in results],
     }
 
@@ -178,12 +194,17 @@ def _run_one(code: str, test: str, entry_point: str, timeout: int = 15) -> tuple
 def score_humaneval(backend, ds, log=print) -> dict:
     results = []
     for i, row in enumerate(ds):
-        g = backend.generate(HUMANEVAL_PROMPT.format(prompt=row["prompt"]), max_tokens=512)
+        g = backend.generate(HUMANEVAL_PROMPT.format(prompt=row["prompt"]),
+                             max_tokens=getattr(backend, "code_budget", 2048))
         code = extract_code(g.text, row["prompt"], row["entry_point"])
         ok, reason = _run_one(code, row["test"], row["entry_point"])
         results.append({
-            "id": row["task_id"], "correct": ok, "reason": reason,
+            "id": row["task_id"], "correct": ok,
+            # A truncated generation is a budget failure, not a coding failure —
+            # label it so it can't be silently read as "the model can't code".
+            "reason": "truncated" if (g.truncated and not ok) else reason,
             "gen_tokens": g.gen_tokens, "decode_tok_s": g.decode_tok_s,
+            "truncated": g.truncated,
         })
         if (i + 1) % 10 == 0:
             log(f"    {i+1}/{len(ds)}  pass@1 {sum(r['correct'] for r in results)/len(results):.1%}")
@@ -192,6 +213,7 @@ def score_humaneval(backend, ds, log=print) -> dict:
     return {
         "n": n,
         "pass@1": sum(r["correct"] for r in results) / n if n else 0.0,
+        "truncated_rate": sum(r.get("truncated", False) for r in results) / n if n else 0.0,
         "mean_tok_s": sum(r["decode_tok_s"] for r in results) / n if n else 0.0,
         "items": results,
     }

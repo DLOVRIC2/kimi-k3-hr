@@ -50,6 +50,18 @@ class Backend:
     # 512-token budget on a 5.2 tok/s local model meant ~98 seconds per item —
     # 5.5 hours for a 200-item task that should take under an hour.
     answer_budget: int = 512
+
+    # Tokens for a task whose answer is a function body.
+    #
+    # Deliberately NOT equal across backends. Fairness here means every model
+    # gets enough budget to FINISH — not that every model gets the same number.
+    # A model that reasons before writing code needs room for both; capping it
+    # to the non-reasoning model's budget measures truncation, not coding
+    # ability. Measured: gpt-oss:120b scored 20% on HumanEval at 512 tokens
+    # while scoring 100% on both Belebele languages — it was being cut off
+    # mid-function, not failing to code.
+    code_budget: int = 2048
+
     # Process name to attribute memory to, when the model runs out-of-process.
     proc_pattern: str | None = None
 
@@ -82,6 +94,7 @@ class OllamaBackend(Backend):
     # Reasoning channel consumes the budget before content appears — measured
     # at 125+ tokens on gpt-oss even with think=false.
     answer_budget = 512
+    code_budget = 2048
     proc_pattern = "llama-server"
 
     def __init__(self, model: str, host: str = "http://localhost:11434",
@@ -142,6 +155,7 @@ class MLXBackend(Backend):
         # is the first thing emitted. 24 tokens covers a digit plus any short
         # preamble; 512 would be spent writing an essay at 5 tok/s.
         self.answer_budget = 512 if thinking else 24
+        self.code_budget = 2048 if thinking else 640
         self.proc_pattern = None  # runs in-process; track our own pid
         self.name = label or pathlib.Path(path).name
         self.src = src

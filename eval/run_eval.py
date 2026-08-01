@@ -114,8 +114,12 @@ def main() -> None:
     if r:
         print(f"\n[eval] peak wired {r['peak_wired_gb']:.0f} GB | "
               f"peak rss {r['peak_rss_gb']:.0f} GB | "
-              f"peak compressed {r['peak_compressed_gb']:.0f} GB | "
-              f"faulted from disk {r['pagein_gb_during_run']:.1f} GB")
+              f"peak compressed {r['peak_compressed_gb']:.0f} GB")
+        sus = r.get("pagein_gb_per_min_sustained", 0.0)
+        print(f"[eval] page-ins: {r['pagein_gb_load']:.1f} GB load, "
+              f"{r['pagein_gb_inference']:.2f} GB early-inference (lazy mmap), "
+              f"{sus:.3f} GB/min sustained "
+              f"({'resident' if sus < 0.5 else 'THRASHING'})")
 
     run["total_wall_s"] = round(time.time() - t_start, 1)
     safe = label.replace(":", "-").replace("/", "-")

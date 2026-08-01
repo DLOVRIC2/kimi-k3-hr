@@ -163,7 +163,45 @@ class Monitor:
             return {}
         pageins = [s.pageins_total for s in self.samples]
         page_size = 4096
+
+        # Split page-ins by phase. Loading a 350 GB model necessarily reads
+        # 350 GB off SSD — that is not a fault, it is the load. Faulting DURING
+        # inference is the pathology (an unwired model re-reading weights every
+        # decode step). Reporting one combined number makes a healthy run look
+        # broken: measured 80.8 GB total, of which 80.5 GB was the load and
+        # 0.3 GB was 420 s of inference.
+        load = [s for s in self.samples if s.label == "load"]
+        infer = [s for s in self.samples if s.label != "load"]
+
+        def _delta_gb(rows) -> float:
+            if len(rows) < 2:
+                return 0.0
+            vals = [r.pageins_total for r in rows]
+            return round((max(vals) - min(vals)) * page_size / 1073741824, 2)
+
+        # Total page-ins during "inference" is NOT evidence of thrashing, and
+        # reading it that way is wrong. Both backends front-load: MLX reads the
+        # weights in an explicit load phase, while llama.cpp mmaps the GGUF and
+        # pages it in lazily on first touch — so ollama reports a model as
+        # loaded before its pages are resident, and the reads land in the first
+        # ~30s of inference. Measured: gpt-oss:120b paged 15.2 GB in 31s, then
+        # 0.02 GB across the remaining 140s.
+        #
+        # Real thrashing is SUSTAINED, so measure the tail instead of the total.
+        def _sustained_gb_per_min(rows) -> float:
+            tail = rows[len(rows) // 2:]
+            if len(tail) < 2:
+                return 0.0
+            span_min = (tail[-1].t - tail[0].t) / 60
+            if span_min <= 0:
+                return 0.0
+            gb = (tail[-1].pageins_total - tail[0].pageins_total) * page_size / 1073741824
+            return round(gb / span_min, 3)
+
         return {
+            "pagein_gb_load": _delta_gb(load),
+            "pagein_gb_inference": _delta_gb(infer),
+            "pagein_gb_per_min_sustained": _sustained_gb_per_min(infer),
             "duration_s": round(self.samples[-1].t, 1),
             "n_samples": len(self.samples),
             "peak_wired_gb": max(s.wired_gb for s in self.samples),
@@ -172,10 +210,7 @@ class Monitor:
             "peak_compressed_gb": max(s.compressed_gb for s in self.samples),
             "peak_swap_mb": max(s.swap_mb for s in self.samples),
             "min_free_gb": min(s.free_gb for s in self.samples),
-            # Page-ins are cumulative since boot; the delta is what this run
-            # faulted from disk. A resident model should be ~0 — a large number
-            # means weights are being re-read from SSD every step.
-            "pagein_gb_during_run": round((max(pageins) - min(pageins)) * page_size / 1073741824, 2),
+            "pagein_gb_total": round((max(pageins) - min(pageins)) * page_size / 1073741824, 2),
         }
 
 

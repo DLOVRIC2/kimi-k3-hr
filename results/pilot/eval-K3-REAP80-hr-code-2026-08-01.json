@@ -1,0 +1,357 @@
+{
+  "label": "K3-REAP80-hr-code",
+  "backend": "mlx:$K3_BUILD",
+  "date": "2026-08-01",
+  "seed": 20260801,
+  "decoding": "greedy (temperature 0)",
+  "tasks": {
+    "belebele_hrv": {
+      "n": 10,
+      "accuracy": 0.5,
+      "parse_rate": 0.9,
+      "mean_tok_s": 5.399569879315216,
+      "mean_thinking_chars": 0.0,
+      "truncated_rate": 0.0,
+      "echo_rate": 0.1,
+      "items": [
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.441995824732169,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.3975050252096946,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.327994715581413,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": true,
+          "raw": "{\"answer\": \"3\", \"reason\": \"The police co",
+          "gen_tokens": 24,
+          "decode_tok_s": 5.4404519977981645,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.392439304099191,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.367781567345163,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": false,
+          "raw": "Passage:\nLjudi su daleko najtalentiranij",
+          "gen_tokens": 24,
+          "decode_tok_s": 5.417136587609521,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": true
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.40832749859128,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.408815704803748,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "1",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.3932505673818145,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        }
+      ],
+      "wall_s": 68.6
+    },
+    "belebele_eng": {
+      "n": 10,
+      "accuracy": 0.4,
+      "parse_rate": 0.7,
+      "mean_tok_s": 4.846147053517251,
+      "mean_thinking_chars": 0.0,
+      "truncated_rate": 0.0,
+      "echo_rate": 0.2,
+      "items": [
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": false,
+          "raw": "Passage:\nThe Iraq Study Group presented ",
+          "gen_tokens": 24,
+          "decode_tok_s": 5.425693368888985,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": true
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": false,
+          "raw": "",
+          "gen_tokens": 0,
+          "decode_tok_s": 0.0,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "1",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.381555970412569,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.154689702551472,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.446391215766121,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": false,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.408090401657639,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "1",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.408236841426619,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": true,
+          "raw": "1",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.4137445450215615,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": false,
+          "raw": "2",
+          "gen_tokens": 1,
+          "decode_tok_s": 5.394728109461055,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": true
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "The answer is 2.",
+          "gen_tokens": 6,
+          "decode_tok_s": 5.428340379986484,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        }
+      ],
+      "wall_s": 40.9
+    },
+    "humaneval": {
+      "n": 10,
+      "pass@1": 0.4,
+      "truncated_rate": 0.0,
+      "mean_tok_s": 3.2532449067167284,
+      "items": [
+        {
+          "id": "HumanEval/100",
+          "correct": false,
+          "reason": "SyntaxError: unterminated triple-quoted string literal (detected at line 92)",
+          "gen_tokens": 640,
+          "decode_tok_s": 5.409424189773777,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/113",
+          "correct": false,
+          "reason": "AssertionError",
+          "gen_tokens": 0,
+          "decode_tok_s": 0.0,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/147",
+          "correct": false,
+          "reason": "AssertionError",
+          "gen_tokens": 0,
+          "decode_tok_s": 0.0,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/1",
+          "correct": false,
+          "reason": "AssertionError",
+          "gen_tokens": 192,
+          "decode_tok_s": 5.426997899479316,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/89",
+          "correct": false,
+          "reason": "AssertionError",
+          "gen_tokens": 0,
+          "decode_tok_s": 0.0,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/159",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 311,
+          "decode_tok_s": 5.412310509691156,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/99",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 287,
+          "decode_tok_s": 5.422008715569858,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/87",
+          "correct": false,
+          "reason": "AssertionError",
+          "gen_tokens": 0,
+          "decode_tok_s": 0.0,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/15",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 83,
+          "decode_tok_s": 5.4306843515394965,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/43",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 197,
+          "decode_tok_s": 5.43102340111368,
+          "truncated": false
+        }
+      ],
+      "wall_s": 351.2
+    }
+  },
+  "croatian_gap": -0.1,
+  "resources": {
+    "pagein_gb_load": 72.84,
+    "pagein_gb_inference": 0.19,
+    "duration_s": 508.5,
+    "n_samples": 102,
+    "peak_wired_gb": 468.81,
+    "peak_rss_gb": 325.12,
+    "peak_active_gb": 247.73,
+    "peak_compressed_gb": 3.78,
+    "peak_swap_mb": 24551.0,
+    "min_free_gb": 0.04,
+    "pagein_gb_total": 76.84
+  },
+  "total_wall_s": 460.7
+}

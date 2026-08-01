@@ -1,0 +1,357 @@
+{
+  "label": "gpt-oss:120b",
+  "backend": "ollama:gpt-oss:120b",
+  "date": "2026-08-01",
+  "seed": 20260801,
+  "decoding": "greedy (temperature 0)",
+  "tasks": {
+    "belebele_hrv": {
+      "n": 10,
+      "accuracy": 0.9,
+      "parse_rate": 0.9,
+      "mean_tok_s": 77.27894172613435,
+      "mean_thinking_chars": 677.9,
+      "truncated_rate": 0.0,
+      "echo_rate": 0.1,
+      "items": [
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 74,
+          "decode_tok_s": 77.2758790653378,
+          "thinking_chars": 234,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "1",
+          "gen_tokens": 463,
+          "decode_tok_s": 76.59611497225748,
+          "thinking_chars": 1642,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 466,
+          "decode_tok_s": 76.81247355450381,
+          "thinking_chars": 1590,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": false,
+          "raw": "1",
+          "gen_tokens": 93,
+          "decode_tok_s": 78.1282159631907,
+          "thinking_chars": 325,
+          "truncated": false,
+          "echoed": true
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 230,
+          "decode_tok_s": 77.02599292365552,
+          "thinking_chars": 779,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 144,
+          "decode_tok_s": 77.07879915513072,
+          "thinking_chars": 476,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 81,
+          "decode_tok_s": 77.09792006944522,
+          "thinking_chars": 255,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 107,
+          "decode_tok_s": 76.99946748031836,
+          "thinking_chars": 328,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 209,
+          "decode_tok_s": 77.03245904563786,
+          "thinking_chars": 954,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "1",
+          "gen_tokens": 64,
+          "decode_tok_s": 78.74209503186594,
+          "thinking_chars": 196,
+          "truncated": false,
+          "echoed": false
+        }
+      ],
+      "wall_s": 52.6
+    },
+    "belebele_eng": {
+      "n": 10,
+      "accuracy": 0.9,
+      "parse_rate": 0.9,
+      "mean_tok_s": 78.34718515098822,
+      "mean_thinking_chars": 650.5,
+      "truncated_rate": 0.0,
+      "echo_rate": 0.1,
+      "items": [
+        {
+          "id": "1",
+          "correct": false,
+          "parsed": false,
+          "raw": "2",
+          "gen_tokens": 90,
+          "decode_tok_s": 78.36697163028552,
+          "thinking_chars": 372,
+          "truncated": false,
+          "echoed": true
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 98,
+          "decode_tok_s": 78.59466326196724,
+          "thinking_chars": 345,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "1",
+          "gen_tokens": 113,
+          "decode_tok_s": 78.42451397622001,
+          "thinking_chars": 461,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 271,
+          "decode_tok_s": 77.99189574987336,
+          "thinking_chars": 1172,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 70,
+          "decode_tok_s": 78.68722726444979,
+          "thinking_chars": 281,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 190,
+          "decode_tok_s": 78.09118831361256,
+          "thinking_chars": 890,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "1",
+          "gen_tokens": 55,
+          "decode_tok_s": 78.96251864592202,
+          "thinking_chars": 184,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 91,
+          "decode_tok_s": 78.35789408423732,
+          "thinking_chars": 348,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "1",
+          "correct": true,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 219,
+          "decode_tok_s": 78.08241010094024,
+          "thinking_chars": 1019,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "2",
+          "correct": true,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 309,
+          "decode_tok_s": 77.91256848237411,
+          "thinking_chars": 1433,
+          "truncated": false,
+          "echoed": false
+        }
+      ],
+      "wall_s": 25.8
+    },
+    "humaneval": {
+      "n": 10,
+      "pass@1": 1.0,
+      "truncated_rate": 0.0,
+      "mean_tok_s": 77.25705855275619,
+      "items": [
+        {
+          "id": "HumanEval/100",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 532,
+          "decode_tok_s": 78.01192761314296,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/113",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 1412,
+          "decode_tok_s": 77.48424249275368,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/147",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 1101,
+          "decode_tok_s": 77.87407867573609,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/1",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 530,
+          "decode_tok_s": 77.46682885005023,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/89",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 529,
+          "decode_tok_s": 76.96011894630104,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/159",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 626,
+          "decode_tok_s": 77.03628372044885,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/99",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 668,
+          "decode_tok_s": 76.82166242077479,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/87",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 751,
+          "decode_tok_s": 76.80887456486903,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/15",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 236,
+          "decode_tok_s": 77.1149090566886,
+          "truncated": false
+        },
+        {
+          "id": "HumanEval/43",
+          "correct": true,
+          "reason": "pass",
+          "gen_tokens": 512,
+          "decode_tok_s": 76.99165918679665,
+          "truncated": false
+        }
+      ],
+      "wall_s": 96.3
+    }
+  },
+  "croatian_gap": 0.0,
+  "resources": {
+    "pagein_gb_load": 0.0,
+    "pagein_gb_inference": 15.29,
+    "duration_s": 172.8,
+    "n_samples": 57,
+    "peak_wired_gb": 120.43,
+    "peak_rss_gb": 65.55,
+    "peak_active_gb": 33.42,
+    "peak_compressed_gb": 3.43,
+    "peak_swap_mb": 23974.8,
+    "min_free_gb": 330.03,
+    "pagein_gb_total": 15.29
+  },
+  "total_wall_s": 174.7
+}
