@@ -139,6 +139,34 @@ def encode(
     return ids
 
 
+CONTROL_IDS = {BOS, EOS, END_OF_MSG, OPEN, CLOSE, SEP}
+
+
+def split_channels(ids: list[int]) -> tuple[list[int], list[int]]:
+    """Split generated ids into (thinking, response).
+
+    With thinking on, K3 emits its chain of thought and then opens a second
+    channel -- `<|open|>response<|sep|>` -- before the actual answer. Two things
+    go wrong if that is ignored:
+
+    1. The answer is scored against the THINKING text. A multiple-choice regex
+       then matches whatever digit the model reasoned about first, which is
+       uncorrelated with its conclusion. Measured 30% on Croatian, i.e. chance.
+    2. `enc.decode` renders the control tokens as the generic
+       `<|reserved_special_token_N|>` placeholders the toolchain registered, so
+       the output looks like '<|reserved_special_token_3|>response...'. Same root
+       cause as the encode-side bug, mirrored.
+
+    The response channel is whatever follows the LAST separator; control tokens
+    are dropped from it. With thinking off there is no separator, so this is a
+    no-op apart from stripping stray control ids.
+    """
+    if SEP in ids:
+        i = len(ids) - 1 - ids[::-1].index(SEP)
+        return ids[:i], [t for t in ids[i + 1:] if t not in CONTROL_IDS]
+    return [], [t for t in ids if t not in CONTROL_IDS]
+
+
 def user(text: str) -> list[dict[str, Any]]:
     """Shorthand for the common single-turn case."""
     return [{"role": "user", "content": text}]

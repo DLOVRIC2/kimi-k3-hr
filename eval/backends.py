@@ -162,10 +162,17 @@ class MLXBackend(Backend):
 
     def __init__(self, path: str, src: str, toolchain: str, label: str | None = None,
                  thinking: bool = False):
-        # No hidden reasoning channel unless thinking is on, so the answer digit
-        # is the first thing emitted. 24 tokens covers a digit plus any short
-        # preamble; 512 would be spent writing an essay at 5 tok/s.
-        self.answer_budget = 512 if thinking else 24
+        # Median generation for a multiple-choice answer is ONE token: the model
+        # emits the digit and stops. The budget therefore only binds on items
+        # where it opens with a preamble or restates the passage -- measured at
+        # 10 of 103 items at a 24-token cap, which is also where 12 of the 18
+        # unparsed answers came from.
+        #
+        # 24 was too tight and was manufacturing failures: an item cut off mid
+        # preamble scores as wrong, indistinguishable from a model that cannot
+        # read. Since the median is 1, raising the cap costs wall-clock only on
+        # that ~10% -- and every other backend here gets 2048.
+        self.answer_budget = 1024 if thinking else 256
         self.code_budget = 2048 if thinking else 640
         self.proc_pattern = None  # runs in-process; track our own pid
         self.name = label or pathlib.Path(path).name
@@ -221,12 +228,17 @@ class MLXBackend(Backend):
             tok = int(mx.argmax(logits[0, -1]))
         decode_s = time.time() - t0
 
+        # Score the response channel, never the chain of thought — see
+        # k3_chat.split_channels.
+        think_ids, resp_ids = self.k3_chat.split_channels(out)
         return Generation(
-            text=self.enc.decode(out),
+            text=self.enc.decode(resp_ids),
             prompt_tokens=len(ids),
             gen_tokens=len(out),
             prefill_s=prefill_s,
             decode_s=decode_s,
+            thinking_chars=len(self.enc.decode(think_ids)) if think_ids else 0,
+            truncated=len(out) >= max_tokens,
         )
 
 

@@ -1,0 +1,7 @@
+[mem] wired limit 515 GB (Metal recommendation, same value mlx-lm uses)
+[mlx] loading $K3_BUILD ...
+[mlx] loaded in 48s | peak 349 GB
+
+[eval] K3-REAP80-hr-code :: belebele_hrv
+$UV_HOME/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/multiprocessing/resource_tracker.py:279: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
