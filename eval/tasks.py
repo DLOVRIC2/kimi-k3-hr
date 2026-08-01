@@ -105,6 +105,22 @@ def load_belebele(config: str, limit: int | None, seed: int):
 _DIGIT = re.compile(r"[1-4]")
 
 
+def belebele_id(row) -> str:
+    """Stable unique id for a Belebele item.
+
+    NOT `question_number` -- that is the question's index WITHIN its passage, so
+    across the 900-item test split it takes exactly two values (1 and 2). Keying
+    anything on it collapses the whole benchmark into two buckets. Measured: a
+    200-item run reported n=200 while making only 2 real model calls, because the
+    checkpoint treated items 3..200 as already done and replayed the first two.
+    Accuracy and parse_rate came out identical, which was the visible tell.
+
+    `link` identifies the source passage, so (link, question_number) is unique
+    across all 900 rows -- verified.
+    """
+    return f"{row['link']}#{row['question_number']}"
+
+
 def _is_echo(text: str, prompt: str) -> bool:
     """Did the model repeat the prompt back instead of answering?
 
@@ -125,8 +141,16 @@ def score_belebele(backend, ds, log=print, ckpt: Checkpoint | None = None) -> di
     results: list[ItemResult] = []
     if len(ckpt):
         log(f"    resuming: {len(ckpt)} items already done")
+
+    # Refuse to run rather than silently deduplicate. A non-unique id makes the
+    # checkpoint replay one item as many and still report the full n.
+    ids = [belebele_id(r) for r in ds]
+    if len(set(ids)) != len(ids):
+        raise SystemExit(f"belebele ids are not unique ({len(set(ids))} of {len(ids)}); refusing")
+
     for i, row in enumerate(ds):
-        prior = ckpt.get(row["question_number"])
+        item_id = belebele_id(row)
+        prior = ckpt.get(item_id)
         if prior is not None:
             results.append(ItemResult(**prior))
             continue
@@ -147,7 +171,7 @@ def score_belebele(backend, ds, log=print, ckpt: Checkpoint | None = None) -> di
         parsed = m is not None
         correct = parsed and int(m.group()) == int(row["correct_answer_num"])
         r = ItemResult(
-            id=str(row["question_number"]), correct=correct, parsed=parsed,
+            id=item_id, correct=correct, parsed=parsed,
             raw=g.text.strip()[:40], gen_tokens=g.gen_tokens,
             decode_tok_s=g.decode_tok_s, thinking_chars=g.thinking_chars,
             truncated=g.truncated, echoed=echoed,

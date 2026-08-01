@@ -377,6 +377,73 @@ that needs it least.
 default branch. The unit test missed it because it tested `Checkpoint` in isolation; the
 bug lived in the *caller*.
 
+### 17. The repo was never self-contained — the eval ran from another venv
+
+**Symptom:** launched the full sweep. Both K3 arms died in under a second with
+`ModuleNotFoundError: No module named 'mlx'`.
+**Cause:** `mlx`, `mlx-lm` and `tiktoken` were never in this project's dependencies. The
+pilot had been run from `local-models/.venv`, which happened to have them. The repo
+looked self-contained and wasn't.
+**Fix:** pinned `mlx==0.32.0`, `mlx-lm==0.31.3`, `tiktoken==0.13.0` — the versions the
+build was actually validated against. Plus a second, non-obvious step: the toolchain's
+`scripts/install_model.sh` **copies `kimi_k3.py` into the target interpreter's
+`mlx_lm/models/`**, because upstream mlx-lm has no K3 model class. `uv sync` alone
+cannot produce a working environment.
+**Lesson:** a project is only reproducible from the machine that has never run it. The
+failure surfaced at launch time, which is the good case — it could as easily have been
+discovered after the ollama arms had run and the K3 comparison was due.
+
+### 18. The checkpoint key collapsed 200 items into 2
+
+**Symptom:** first real 200-item arm finished suspiciously fast and reported
+`accuracy 53.0% parse 53.0% n=200` — for a model that scored 70% with 100% parse in the
+pilot. Both languages returned **accuracy exactly equal to parse rate**.
+**Cause:** the checkpoint keyed on `row["question_number"]`. That is the question's index
+*within its passage*, so across Belebele's 900-item split **it takes exactly two values**:
+
+```
+rows: 900 | distinct question_number: 2   →   most common: [(1, 482), (2, 418)]
+```
+
+Items 3..200 were therefore treated as already-done and **replayed the first two
+results**. The benchmark made 2 real model calls and reported n=200. The aggregate was
+just those two records duplicated 100×, which is exactly why accuracy and parse rate
+were identical.
+**Fix:** `(link, question_number)` — verified unique across all 900 rows — plus a
+pre-flight that refuses to run if ids collide:
+
+```python
+if len(set(ids)) != len(ids):
+    raise SystemExit(f"belebele ids are not unique ({len(set(ids))} of {len(ids)}); refusing")
+```
+
+**Lesson:** **the worst bug in the project.** It did not crash, did not warn, ran fast,
+and produced a plausible-looking number that was fabricated. A field named `*_number` is
+not an id. Anything used as a dedup key needs its uniqueness asserted against the actual
+data, not assumed from its name — the same lesson as the manifest desync (#3), which is
+why both now refuse rather than proceed.
+
+### 19. The pilot's 100% parse rate was luck
+
+**Symptom:** once #18 was fixed, gpt-oss:20b still showed ~47% of Belebele items
+unparsed. Inspecting them: `raw=''`, `gen_tokens=512`, `truncated=True`,
+`thinking_chars=2246`.
+**Cause:** `answer_budget=512` for ollama. gpt-oss reasons regardless of `think: false`,
+and on harder items the chain consumed the entire budget before any content was emitted
+— so `content` came back **empty** and scored as wrong.
+**Fix:** `answer_budget` 512 → 2048. Verified: **53% → 91.7%**, zero truncations, zero
+empty responses.
+**Lesson:** the n=10 pilot showed 100% parse purely because none of its ten items needed
+a long chain. **Budget failures are heavy-tailed, so a small pilot is the wrong
+instrument for finding them** — it validates that the harness runs, not that it is
+correctly parameterised. This is the third distinct time a token budget has produced a
+fake capability result (#12, #13, #19); the pattern is now the single most productive
+thing to check when a score looks wrong.
+
+**Also confirmed here:** the suspect peak-RSS from the pilot. With the other models
+stopped, gpt-oss:20b measures **17 GB** rather than the 66 GB it reported when
+gpt-oss:120b was still resident.
+
 ---
 
 ## Phase 7 — The Docker incident

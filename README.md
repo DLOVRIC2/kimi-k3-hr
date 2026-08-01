@@ -118,3 +118,22 @@ their UI. Neither threshold applies here.
 
 Note Moonshot consistently say "open weight", never "open source". Worth matching that
 language in any writeup.
+
+## Setup
+
+```bash
+uv sync
+# upstream mlx-lm has no K3 model class; register it into THIS venv
+$K3_MLX/scripts/install_model.sh .venv/bin/python
+```
+
+The second step is required and `uv sync` cannot do it — see LOG.md #17.
+
+## Full sweep
+
+```bash
+bash eval/sweep.sh          # ~5h, resumable; re-running resumes rather than repeats
+```
+
+Per-item results stream to `results/full/checkpoints/`, so an interrupted run costs at
+most one item. See `LOG.md` for the full build history and the mistakes worth reading.

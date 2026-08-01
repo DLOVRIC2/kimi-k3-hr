@@ -91,9 +91,20 @@ class OllamaBackend(Backend):
     models were compared under identical conditions.
     """
 
-    # Reasoning channel consumes the budget before content appears — measured
-    # at 125+ tokens on gpt-oss even with think=false.
-    answer_budget = 512
+    # Reasoning channel consumes the budget before content appears, and gpt-oss
+    # reasons regardless of `think: false`. 512 was not enough: at n=200 roughly
+    # half of gpt-oss:20b's Belebele items came back with EMPTY content, 512
+    # generated tokens, truncated=True and ~2.2k characters of thinking. Those
+    # score as wrong, so the model looked like it could not read.
+    #
+    # The n=10 pilot showed 100% parse purely by luck — none of its ten items
+    # happened to need a long chain. Budget failures are heavy-tailed; a small
+    # pilot is the wrong instrument for finding them.
+    #
+    # Items that answer quickly still stop at their EOS, so this costs wall-clock
+    # only on the items that actually need it. truncated_rate is reported, and
+    # anything above ~0 means this is still too low.
+    answer_budget = 2048
     code_budget = 2048
     proc_pattern = "llama-server"
 

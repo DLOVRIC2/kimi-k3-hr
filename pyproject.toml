@@ -7,4 +7,12 @@ dependencies = [
     "pyyaml>=6.0",
     "datasets>=3.0",
     "huggingface-hub>=1.26",
+    # Needed by eval/backends.py MLXBackend. Pinned to the versions the build and
+    # the pilot were actually validated against -- the eval previously ran from a
+    # different venv, so the repo looked self-contained while silently depending
+    # on one. mlx-lm pulls transformers, which reap_calibrate's build_tokenizer
+    # needs for the K3 tokenizer.
+    "mlx==0.32.0",
+    "mlx-lm==0.31.3",
+    "tiktoken==0.13.0",
 ]
