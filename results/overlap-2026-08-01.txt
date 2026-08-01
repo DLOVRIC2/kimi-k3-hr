@@ -1,0 +1,37 @@
+per-language saliency: 8 sources x 92 MoE layers x 896 experts
+  code              42,518 tokens
+  de                19,516 tokens
+  en                25,979 tokens
+  fr                10,591 tokens
+  hr                64,499 tokens
+  ru                32,539 tokens
+  sr                35,859 tokens
+  zh                30,643 tokens
+
+chance overlap for top-242 of 896: 27.0%
+
+pairwise top-242 overlap (mean over layers)
+                    code       de       en       fr       hr       ru       sr       zh
+  code           100.0%   34.1%   28.8%   34.3%   29.2%   28.2%   37.4%   23.8% 
+  de              34.1%  100.0%   52.5%   68.5%   62.3%   55.4%   63.3%   49.6% 
+  en              28.8%   52.5%  100.0%   56.5%   57.0%   59.5%   49.3%   47.7% 
+  fr              34.3%   68.5%   56.5%  100.0%   61.6%   56.0%   64.1%   52.6% 
+  hr              29.2%   62.3%   57.0%   61.6%  100.0%   73.9%   68.0%   47.9% 
+  ru              28.2%   55.4%   59.5%   56.0%   73.9%  100.0%   58.4%   45.5% 
+  sr              37.4%   63.3%   49.3%   64.1%   68.0%   58.4%  100.0%   47.0% 
+  zh              23.8%   49.6%   47.7%   52.6%   47.9%   45.5%   47.0%  100.0% 
+
+  off-diagonal: min 23.8%  mean 50.4%  max 73.9%
+  vs chance (27.0%): 1.87x
+  -> languages largely SHARE experts; a targeted build buys little.
+
+saliency retained at top-242: own-distribution vs the ACTUAL mixed build
+  source             own   mixed      gain
+  code            76.6%   51.9%   +24.7 pts
+  de              78.2%   67.2%   +11.1 pts
+  en              76.9%   61.5%   +15.4 pts
+  fr              82.0%   70.3%   +11.7 pts
+  hr              82.5%   76.9%    +5.7 pts
+  ru              82.6%   74.3%    +8.3 pts
+  sr              79.0%   70.4%    +8.7 pts
+  zh              80.9%   63.5%   +17.4 pts

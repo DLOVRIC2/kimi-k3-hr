@@ -1,0 +1,31 @@
+top-242 of 896 experts, 92 MoE layers
+reference-mix sources : ['code', 'en', 'zh', 'de', 'ru', 'fr']
+excluded from selection: ['hr', 'sr']
+chance retention        : 27.0%
+
+  source    our share  ref share    scale
+  code         16.2%      43.8%     2.70x
+  en            9.9%      32.8%     3.31x
+  zh           11.7%      16.4%     1.40x
+  de            7.4%       2.3%     0.31x
+  ru           12.4%       2.3%     0.19x
+  fr            4.0%       2.3%     0.58x
+
+  source       own   ref-mix   all-src   ref gap
+  --------------------------------------------
+  code      76.6%     65.7%     51.9%    +10.9  (in ref mix)
+  de        78.2%     55.6%     67.2%    +22.6  (in ref mix)
+  en        76.9%     64.4%     61.5%    +12.5  (in ref mix)
+  fr        82.0%     60.7%     70.3%    +21.4  (in ref mix)
+  hr        82.5%     54.2%     76.9%    +28.3  <-- TARGET
+  ru        82.6%     59.1%     74.3%    +23.5  (in ref mix)
+  sr        79.0%     50.4%     70.4%    +28.6
+  zh        80.9%     61.6%     63.5%    +19.3  (in ref mix)
+
+  hr retention under a reference-mix plan : 54.2%
+  hr ceiling (own-distribution plan)      : 82.5%
+  gap                                        : +28.3 pts
+  mean gap for sources IN the reference mix  : +18.4 pts
+
+  => HR IS PARTIALLY DEGRADED. It retains real mass but measurably
+     less than languages in the reference mix. A targeted build helps.
