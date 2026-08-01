@@ -38,6 +38,21 @@ class Generation:
 class Backend:
     name: str
 
+    # Tokens to allow for a task whose answer is a single digit.
+    #
+    # This is a per-backend property because it is not about the answer at all —
+    # it is about what the model emits BEFORE the answer. A model with a hidden
+    # reasoning channel spends the budget thinking first and returns empty
+    # content if capped too low; a model without one starts writing the answer
+    # immediately and burns any budget you give it on prose.
+    #
+    # Getting this wrong is expensive rather than incorrect: measured here, a
+    # 512-token budget on a 5.2 tok/s local model meant ~98 seconds per item —
+    # 5.5 hours for a 200-item task that should take under an hour.
+    answer_budget: int = 512
+    # Process name to attribute memory to, when the model runs out-of-process.
+    proc_pattern: str | None = None
+
     def generate(self, prompt: str, max_tokens: int = 512) -> Generation:
         raise NotImplementedError
 
@@ -63,6 +78,11 @@ class OllamaBackend(Backend):
     thinking_chars is recorded per call and reported, rather than pretending all
     models were compared under identical conditions.
     """
+
+    # Reasoning channel consumes the budget before content appears — measured
+    # at 125+ tokens on gpt-oss even with think=false.
+    answer_budget = 512
+    proc_pattern = "llama-server"
 
     def __init__(self, model: str, host: str = "http://localhost:11434",
                  think: bool = False):
@@ -118,6 +138,11 @@ class MLXBackend(Backend):
 
     def __init__(self, path: str, src: str, toolchain: str, label: str | None = None,
                  thinking: bool = False):
+        # No hidden reasoning channel unless thinking is on, so the answer digit
+        # is the first thing emitted. 24 tokens covers a digit plus any short
+        # preamble; 512 would be spent writing an essay at 5 tok/s.
+        self.answer_budget = 512 if thinking else 24
+        self.proc_pattern = None  # runs in-process; track our own pid
         self.name = label or pathlib.Path(path).name
         self.src = src
         self.thinking = thinking

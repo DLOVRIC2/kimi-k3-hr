@@ -17,11 +17,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import time
 from datetime import date
 
 import backends as B
+import monitor as M
 import tasks as T
 
 
@@ -37,6 +39,8 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=20260801)
     ap.add_argument("--thinking", action="store_true")
     ap.add_argument("--out-dir", default=None)
+    ap.add_argument("--monitor-interval", type=float, default=5.0,
+                    help="seconds between memory samples (0 disables)")
     a = ap.parse_args()
 
     out_dir = pathlib.Path(a.out_dir) if a.out_dir else pathlib.Path(__file__).resolve().parent.parent / "results"
@@ -47,8 +51,20 @@ def main() -> None:
         if not a.src:
             raise SystemExit("--src is required for the mlx backend")
         kw = dict(src=a.src, toolchain=a.toolchain, label=a.label, thinking=a.thinking)
-    backend = B.make_backend(a.backend, **kw)
+    label = a.label or a.backend.split(":", 1)[1]
+
+    # Start sampling BEFORE the backend is constructed — for the MLX backend
+    # that call loads 350 GB, and the load itself is one of the most
+    # interesting things to measure.
+    mon = M.attach(out_dir, label, pid=os.getpid(), interval=a.monitor_interval)
+    mon.label("load")
+    try:
+        backend = B.make_backend(a.backend, **kw)
+    except Exception:
+        mon.stop()
+        raise
     label = a.label or backend.name
+    mon.proc_pattern = getattr(backend, "proc_pattern", None)
 
     run = {
         "label": label,
@@ -64,6 +80,7 @@ def main() -> None:
 
     for task in wanted:
         print(f"\n[eval] {label} :: {task}", flush=True)
+        mon.label(task)
         t0 = time.time()
 
         if task.startswith("belebele_"):
@@ -90,6 +107,15 @@ def main() -> None:
         run["croatian_gap"] = round(eng - hrv, 4)
         print(f"\n[eval] English-Croatian gap: {100*(eng-hrv):+.1f} pts "
               f"(eng {eng:.1%} / hrv {hrv:.1%})")
+
+    mon.stop()
+    run["resources"] = mon.summary()
+    r = run["resources"]
+    if r:
+        print(f"\n[eval] peak wired {r['peak_wired_gb']:.0f} GB | "
+              f"peak rss {r['peak_rss_gb']:.0f} GB | "
+              f"peak compressed {r['peak_compressed_gb']:.0f} GB | "
+              f"faulted from disk {r['pagein_gb_during_run']:.1f} GB")
 
     run["total_wall_s"] = round(time.time() - t_start, 1)
     safe = label.replace(":", "-").replace("/", "-")

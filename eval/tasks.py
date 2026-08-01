@@ -67,11 +67,11 @@ def score_belebele(backend, ds, log=print) -> dict:
             a1=row["mc_answer1"], a2=row["mc_answer2"],
             a3=row["mc_answer3"], a4=row["mc_answer4"],
         )
-        # Generous despite wanting one digit: reasoning models spend the budget
-        # on their thinking channel FIRST, and a tight cap returns empty content
-        # that scores as a wrong answer. Measured: gpt-oss burns 125+ tokens
-        # thinking before emitting anything, even with think=false.
-        g = backend.generate(prompt, max_tokens=512)
+        # The backend declares its own budget — see Backend.answer_budget.
+        # A fixed value is wrong in both directions: too low truncates a
+        # reasoning model's thinking and returns empty content; too high makes
+        # a non-reasoning model write prose for 98 seconds per item.
+        g = backend.generate(prompt, max_tokens=getattr(backend, "answer_budget", 512))
         m = _DIGIT.search(g.text)
         parsed = m is not None
         correct = parsed and int(m.group()) == int(row["correct_answer_num"])
