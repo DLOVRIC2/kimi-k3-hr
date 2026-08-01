@@ -30,11 +30,23 @@ costs elsewhere.
 
 ## Arms
 
-| Recipe | Mix | Role |
+**One corpus, one calibration, every arm derived from it.** `corpus/recipes/survey.yaml`
+tags all eight sources separately (hr, code, en, sr, ru, de, zh, fr). Calibrate once,
+then `reap_subset.py` sums whichever buckets an arm needs:
+
+| Arm | `--keep-sources` | Role |
 |---|---|---|
-| `control.yaml` | 40% code / 30% en / 15% zh / 15% other | reproduces the reference mix — the baseline |
-| `hr-code.yaml` | 35% hr / 35% code / 15% sr / 15% en | the hypothesis |
-| `hr-heavy.yaml` | 70% hr / 15% sr / 10% code / 5% en | ablation — should *underperform* hr-code if their finding generalises |
+| control | `code,en,zh,de,ru,fr` | reproduces the reference mix — the baseline |
+| hr-code | `hr,code` | the hypothesis |
+| hr-heavy | `hr,sr` | language-only ablation |
+| hr-only | `hr` | isolates the Slavic-neighbour effect |
+
+This replaced an earlier design with three separate corpora and three calibration runs.
+That was wrong: run-to-run variance would have been confounded with the corpus effect.
+Per `reap_subset.py`'s own docs, subsetting one tagged run is *"strictly better than
+re-calibrating on a filtered corpus — same tokens, same layer states, same conditions,
+so any difference between the resulting builds is attributable to the target
+distribution and nothing else."*
 
 The control arm matters. Without it there is no claim, only a model.
 

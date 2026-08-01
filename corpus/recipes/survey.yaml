@@ -1,0 +1,67 @@
+# THE SURVEY CORPUS — one corpus, one calibration, every arm derived from it.
+#
+# This replaces the earlier three-recipe design, which was wrong. Three corpora
+# meant three calibration runs, and run-to-run variance would then be confounded
+# with the corpus effect we are trying to measure.
+#
+# reap_subset.py sums whichever tagged buckets you want out of a SINGLE tagged
+# calibration. Per its own docs: "strictly better than re-calibrating on a
+# filtered corpus -- same tokens, same layer states, same conditions, so any
+# difference between the resulting builds is attributable to the target
+# distribution and nothing else."
+#
+# So: tag every language SEPARATELY here, calibrate once, then derive arms:
+#
+#   control  = code,en,zh,de,ru,fr        (reproduces the reference mix)
+#   hr-code  = hr,code                    (the hypothesis)
+#   hr-heavy = hr,sr                      (language-only ablation)
+#   hr-only  = hr                         (isolates the Slavic-neighbour effect)
+#
+# Ratios here control how many TOKENS each language contributes to the saliency
+# estimate, not the final build. Every language needs enough tokens for its
+# bucket to be statistically meaningful, so this is deliberately flatter than
+# any single arm's target mix.
+name: survey-all-sources
+sources:
+  - tag: hr
+    ratio: 0.22
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.hr
+  - tag: code
+    ratio: 0.22
+    kind: hf
+    dataset: code-search-net/code_search_net
+    config: python
+    text_field: whole_func_string
+    min_chars: 200
+  - tag: en
+    ratio: 0.16
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.en
+  - tag: sr
+    ratio: 0.10
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.sr
+  - tag: ru
+    ratio: 0.10
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.ru
+  - tag: de
+    ratio: 0.08
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.de
+  - tag: zh
+    ratio: 0.07
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.zh
+  - tag: fr
+    ratio: 0.05
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.fr

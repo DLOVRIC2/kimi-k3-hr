@@ -12,8 +12,9 @@ Two non-obvious constraints drive this script, both from the kimi-k3-mlx docs:
    silently give you almost no Croatian while looking correct.
 
 Output is written twice:
-  <out>.txt        plain corpus  -> reap_calibrate.py --calib-text
-  <out>.tags.jsonl one line per chunk with its domain tag -> reap_subset.py
+  <out>.txt                   plain corpus -> reap_calibrate.py --calib-text
+  <out>.txt.sources.json      per-doc source manifest, read automatically by
+                              reap_calibrate.py to produce per-source saliency
 
 The tags are what let you calibrate ONCE and then re-target different domain
 mixes without re-running calibration.
@@ -126,28 +127,38 @@ def pull_local(src: Source, want: int, chunk_chars: int) -> None:
 
 
 def interleave(sources: list[Source], total_chunks: int) -> list[tuple[str, str]]:
-    """Round-robin weighted by ratio. Order matters — calibration reads the head."""
-    quota = {s.tag: int(round(s.ratio * total_chunks)) for s in sources}
-    cursor = {s.tag: 0 for s in sources}
+    """Largest-deficit scheduling, so EVERY prefix approximates the target mix.
+
+    This matters more than it looks. reap_calibrate reads only the first
+    `seqs x seqlen` tokens, so the head of the file *is* the corpus as far as
+    calibration is concerned. A naive weighted round-robin emits runs of the same
+    source (take = round(ratio*10) grabs 2 hr, then 2 code, ...), which means a
+    short calibration run can see one language and nothing else — the exact
+    failure this whole project is about.
+
+    Instead, at each position pick the source whose emitted share has fallen
+    furthest below its target share (Bresenham / error-diffusion). No source can
+    drift more than one chunk from its ideal count at any point in the sequence,
+    so a prefix of any length is representative — and low-ratio sources cannot be
+    starved by quota rounding.
+    """
     by_tag = {s.tag: s for s in sources}
+    cursor = {s.tag: 0 for s in sources}
     emitted: list[tuple[str, str]] = []
 
-    # Deterministic weighted round-robin: each pass takes proportionally from each
-    # source, so any prefix of the output approximates the target composition.
-    while len(emitted) < total_chunks:
-        progressed = False
+    for n in range(total_chunks):
+        best_tag, best_deficit = None, None
         for s in sources:
-            take = max(1, round(s.ratio * 10))
-            for _ in range(take):
-                if cursor[s.tag] >= min(quota[s.tag], len(s.chunks)):
-                    break
-                emitted.append((s.tag, by_tag[s.tag].chunks[cursor[s.tag]]))
-                cursor[s.tag] += 1
-                progressed = True
-                if len(emitted) >= total_chunks:
-                    return emitted
-        if not progressed:
-            break
+            if cursor[s.tag] >= len(s.chunks):
+                continue  # exhausted
+            deficit = s.ratio * (n + 1) - cursor[s.tag]
+            if best_deficit is None or deficit > best_deficit:
+                best_tag, best_deficit = s.tag, deficit
+        if best_tag is None:
+            break  # every source exhausted
+        emitted.append((best_tag, by_tag[best_tag].chunks[cursor[best_tag]]))
+        cursor[best_tag] += 1
+
     return emitted
 
 
@@ -186,11 +197,40 @@ def main() -> None:
 
     out = pathlib.Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
+    txt_path = f"{out}.txt"
 
-    with open(f"{out}.txt", "w") as ftxt, open(f"{out}.tags.jsonl", "w") as ftags:
-        for i, (tag, chunk) in enumerate(emitted):
-            ftxt.write(chunk + "\n")
-            ftags.write(json.dumps({"i": i, "tag": tag, "chars": len(chunk)}) + "\n")
+    # Exact contract with reap_calibrate.py: it re-walks the text with
+    #     doc_ids = enc.encode_ordinary(text[pos:pos + n]); pos += n
+    # over zip(manifest["order"], manifest["chars"]). Every char count must match
+    # the file byte-for-byte or the walk desyncs and every subsequent document is
+    # attributed to the wrong source — silently, with plausible-looking output.
+    # Hence: write chunk + "\n\n", record len(chunk) + 2. Do not change one
+    # without the other.
+    manifest_order: list[str] = []
+    manifest_chars: list[int] = []
+
+    with open(txt_path, "w", encoding="utf-8") as ftxt:
+        for tag, chunk in emitted:
+            ftxt.write(chunk)
+            ftxt.write("\n\n")
+            manifest_order.append(tag)
+            manifest_chars.append(len(chunk) + 2)
+
+    side = f"{txt_path}.sources.json"
+    with open(side, "w") as f:
+        json.dump({"order": manifest_order, "chars": manifest_chars}, f)
+
+    # Verify the walk before handing this to a multi-hour calibration run.
+    text = open(txt_path, encoding="utf-8").read()
+    pos = 0
+    for tag, n in zip(manifest_order, manifest_chars):
+        pos += n
+    if pos != len(text):
+        raise SystemExit(
+            f"MANIFEST DESYNC: chars sum to {pos:,} but file is {len(text):,}. "
+            "Calibration would mislabel sources. Refusing to write."
+        )
+    print(f"\nmanifest verified: {len(manifest_order)} docs, offsets align exactly")
 
     # Report ACHIEVED composition — not the requested one. They differ whenever a
     # source ran dry, and silently shipping the difference is how you get a corpus
@@ -215,7 +255,7 @@ def main() -> None:
         print(f"  {s.tag:<14}{'':>9}{head_tags[s.tag]/head_total*100:>8.1f}%")
 
     print(f"\nwrote {out}.txt  ({total:,} chars)")
-    print(f"wrote {out}.tags.jsonl  ({len(emitted)} chunks)")
+    print(f"wrote {side}  ({len(manifest_order)} docs)")
 
 
 if __name__ == "__main__":
