@@ -1,0 +1,197 @@
+"""Belebele and HumanEval, scored objectively.
+
+Belebele is the load-bearing benchmark here because it is FULLY PARALLEL: the
+same 900 items exist in every language. So `score(eng) - score(hrv)` isolates
+Croatian ability from general capability, which raw scores cannot. A 601B model
+beating a 31B model on Croatian proves nothing on its own; a 601B model with a
+SMALLER English-Croatian gap than the 31B model is evidence the Croatian
+targeting worked.
+
+Unparseable answers are counted as wrong AND reported separately. Silently
+dropping them would flatter a model that refuses hard questions, and the refusal
+rate is itself a signal about pruning damage.
+"""
+
+from __future__ import annotations
+
+import json
+import multiprocessing
+import re
+import subprocess
+import sys
+import tempfile
+import textwrap
+from dataclasses import dataclass
+
+BELEBELE_PROMPT = """Passage:
+{passage}
+
+Question: {question}
+
+1. {a1}
+2. {a2}
+3. {a3}
+4. {a4}
+
+Answer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else."""
+
+
+@dataclass
+class ItemResult:
+    id: str
+    correct: bool
+    parsed: bool
+    raw: str
+    gen_tokens: int = 0
+    decode_tok_s: float = 0.0
+    thinking_chars: int = 0
+    truncated: bool = False
+
+
+def load_belebele(config: str, limit: int | None, seed: int):
+    from datasets import load_dataset
+    ds = load_dataset("facebook/belebele", config, split="test")
+    if limit and limit < len(ds):
+        ds = ds.shuffle(seed=seed).select(range(limit))
+    return ds
+
+
+_DIGIT = re.compile(r"[1-4]")
+
+
+def score_belebele(backend, ds, log=print) -> dict:
+    results: list[ItemResult] = []
+    for i, row in enumerate(ds):
+        prompt = BELEBELE_PROMPT.format(
+            passage=row["flores_passage"], question=row["question"],
+            a1=row["mc_answer1"], a2=row["mc_answer2"],
+            a3=row["mc_answer3"], a4=row["mc_answer4"],
+        )
+        # Generous despite wanting one digit: reasoning models spend the budget
+        # on their thinking channel FIRST, and a tight cap returns empty content
+        # that scores as a wrong answer. Measured: gpt-oss burns 125+ tokens
+        # thinking before emitting anything, even with think=false.
+        g = backend.generate(prompt, max_tokens=512)
+        m = _DIGIT.search(g.text)
+        parsed = m is not None
+        correct = parsed and int(m.group()) == int(row["correct_answer_num"])
+        results.append(ItemResult(
+            id=str(row["question_number"]), correct=correct, parsed=parsed,
+            raw=g.text.strip()[:40], gen_tokens=g.gen_tokens,
+            decode_tok_s=g.decode_tok_s, thinking_chars=g.thinking_chars,
+            truncated=g.truncated,
+        ))
+        if (i + 1) % 25 == 0:
+            acc = sum(r.correct for r in results) / len(results)
+            log(f"    {i+1}/{len(ds)}  acc {acc:.1%}")
+
+    n = len(results)
+    return {
+        "n": n,
+        "accuracy": sum(r.correct for r in results) / n if n else 0.0,
+        "parse_rate": sum(r.parsed for r in results) / n if n else 0.0,
+        "mean_tok_s": sum(r.decode_tok_s for r in results) / n if n else 0.0,
+        "mean_thinking_chars": sum(r.thinking_chars for r in results) / n if n else 0.0,
+        "truncated_rate": sum(r.truncated for r in results) / n if n else 0.0,
+        "items": [r.__dict__ for r in results],
+    }
+
+
+# ---------------------------------------------------------------- HumanEval
+
+def load_humaneval(limit: int | None, seed: int):
+    from datasets import load_dataset
+    ds = load_dataset("openai/openai_humaneval", split="test")
+    if limit and limit < len(ds):
+        ds = ds.shuffle(seed=seed).select(range(limit))
+    return ds
+
+
+HUMANEVAL_PROMPT = """Complete this Python function. Reply with the complete function only, inside a single ```python code block. No explanation.
+
+```python
+{prompt}```"""
+
+_FENCE = re.compile(r"```(?:python)?\s*\n(.*?)```", re.S)
+
+
+def extract_code(text: str, prompt: str, entry_point: str) -> str:
+    """Pull runnable code out of a chat response.
+
+    Models answer HumanEval in three shapes: a fenced block containing the whole
+    function, a fenced block containing only the body, or a bare continuation of
+    the signature. Handle all three, otherwise the score measures formatting
+    compliance rather than coding ability.
+    """
+    m = _FENCE.search(text)
+    body = m.group(1) if m else text
+
+    if f"def {entry_point}" in body:
+        return body
+    # Body-only: re-attach the original signature.
+    if body.strip() and not body.lstrip().startswith("def "):
+        indented = textwrap.indent(textwrap.dedent(body).strip("\n"), "    ")
+        return prompt + "\n" + indented
+    return prompt + body
+
+
+_RUNNER = """
+import sys, json
+{code}
+
+{test}
+
+try:
+    check({entry_point})
+    print("__PASS__")
+except BaseException as e:
+    print("__FAIL__", type(e).__name__)
+"""
+
+
+def _run_one(code: str, test: str, entry_point: str, timeout: int = 15) -> tuple[bool, str]:
+    """Execute generated code in a separate short-lived process.
+
+    Model-generated code is untrusted: it runs in its own interpreter with a hard
+    timeout so an infinite loop or a crash takes down only that subprocess. Not a
+    security sandbox — do not point this at adversarial input.
+    """
+    src = _RUNNER.format(code=code, test=test, entry_point=entry_point)
+    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
+        f.write(src)
+        path = f.name
+    try:
+        p = subprocess.run([sys.executable, path], capture_output=True,
+                           text=True, timeout=timeout)
+        out = p.stdout
+        if "__PASS__" in out:
+            return True, "pass"
+        reason = out.split("__FAIL__")[-1].strip() if "__FAIL__" in out else (
+            p.stderr.strip().splitlines()[-1][:80] if p.stderr.strip() else "no output")
+        return False, reason
+    except subprocess.TimeoutExpired:
+        return False, "timeout"
+    except Exception as e:  # noqa: BLE001
+        return False, f"harness:{type(e).__name__}"
+
+
+def score_humaneval(backend, ds, log=print) -> dict:
+    results = []
+    for i, row in enumerate(ds):
+        g = backend.generate(HUMANEVAL_PROMPT.format(prompt=row["prompt"]), max_tokens=512)
+        code = extract_code(g.text, row["prompt"], row["entry_point"])
+        ok, reason = _run_one(code, row["test"], row["entry_point"])
+        results.append({
+            "id": row["task_id"], "correct": ok, "reason": reason,
+            "gen_tokens": g.gen_tokens, "decode_tok_s": g.decode_tok_s,
+        })
+        if (i + 1) % 10 == 0:
+            log(f"    {i+1}/{len(ds)}  pass@1 {sum(r['correct'] for r in results)/len(results):.1%}")
+
+    n = len(results)
+    return {
+        "n": n,
+        "pass@1": sum(r["correct"] for r in results) / n if n else 0.0,
+        "mean_tok_s": sum(r["decode_tok_s"] for r in results) / n if n else 0.0,
+        "items": results,
+    }
