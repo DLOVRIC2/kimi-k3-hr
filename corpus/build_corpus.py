@@ -44,6 +44,7 @@ class Source:
     text_field: str = "text"
     path: str | None = None
     glob: str = "**/*.py"
+    exclude: list[str] = field(default_factory=list)
     min_chars: int = 200
     chunks: list[str] = field(default_factory=list)
 
@@ -81,15 +82,32 @@ def pull_hf(src: Source, want: int, chunk_chars: int) -> None:
 
 
 def pull_local(src: Source, want: int, chunk_chars: int) -> None:
-    """Read real files off disk — your own code is better calibration than scraped code."""
+    """Read real files off disk — your own code is better calibration than scraped code.
+
+    The exclude list is not optional in practice. A bare `**/*.py` over a dev
+    workspace is overwhelmingly vendored dependencies: measured on this machine,
+    689,344 matches of which 652,341 lived in .venv/site-packages. Because files
+    are consumed in sorted order until the quota fills, an unfiltered glob yields
+    a "code" bucket that is almost entirely third-party library source — which
+    calibrates the surviving experts on numpy internals rather than your patterns.
+    """
     root = pathlib.Path(src.path).expanduser()
     if not root.exists():
         raise SystemExit(f"local source path does not exist: {root}")
 
+    if not src.exclude:
+        print(f"  [{src.tag}] WARNING: no exclude list — vendored deps will dominate")
+
     print(f"  [{src.tag}] reading {root}/{src.glob}")
+    seen = skipped = 0
     buf = ""
     for f in sorted(root.glob(src.glob)):
         if not f.is_file():
+            continue
+        seen += 1
+        posix = f.as_posix()
+        if any(pat in posix for pat in src.exclude):
+            skipped += 1
             continue
         try:
             text = f.read_text(errors="ignore").strip()
@@ -102,7 +120,9 @@ def pull_local(src: Source, want: int, chunk_chars: int) -> None:
             src.chunks.append(buf[:chunk_chars])
             buf = buf[chunk_chars:]
             if len(src.chunks) >= want:
+                print(f"  [{src.tag}] scanned {seen:,} files, excluded {skipped:,}")
                 return
+    print(f"  [{src.tag}] scanned {seen:,} files, excluded {skipped:,}")
 
 
 def interleave(sources: list[Source], total_chunks: int) -> list[tuple[str, str]]:

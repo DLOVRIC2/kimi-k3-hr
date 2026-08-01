@@ -19,6 +19,16 @@ sources:
     kind: local
     path: ~/code/workspace
     glob: "**/*.py"
+    exclude:
+      - "/.venv/"
+      - "/site-packages/"
+      - "/node_modules/"
+      - "/__pycache__/"
+      - "/migrations/"
+      - "/.git/"
+      - "/build/"
+      - "/dist/"
+      - "/.mypy_cache/"
     min_chars: 400
   - tag: sl_neighbours
     ratio: 0.15
