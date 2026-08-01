@@ -20,19 +20,22 @@ import pathlib
 import sys
 import time
 
-STOP_TOKENS = {163584, 163586}
+STOP_TOKENS = {163584, 163585, 163586, 163588}
 
 PROMPTS = [
     ("hr-prose", "croatian",
-     "Objasni ukratko razliku između svršenih i nesvršenih glagola u hrvatskom jeziku:"),
+     "Objasni ukratko razliku između svršenih i nesvršenih glagola u hrvatskom jeziku."),
     ("hr-business", "croatian",
-     "Napiši kratku obavijest zaposlenicima trgovine o promjeni radnog vremena tijekom blagdana:"),
+     "Napiši kratku obavijest zaposlenicima trgovine o promjeni radnog vremena "
+     "tijekom blagdana. Najviše 80 riječi."),
     ("hr-code", "croatian+code",
-     "# Napiši Python funkciju koja provjerava je li OIB (hrvatski osobni identifikacijski broj) ispravan.\ndef provjeri_oib(oib: str) -> bool:"),
+     "Napiši Python funkciju koja provjerava je li OIB (hrvatski osobni "
+     "identifikacijski broj) ispravan, uključujući kontrolnu znamenku."),
     ("code", "control",
-     'def merge_intervals(intervals):\n    """Merge overlapping intervals."""\n'),
+     "Write a Python function `merge_intervals(intervals)` that merges "
+     "overlapping closed intervals given as (start, end) tuples."),
     ("zh", "negative control — pruned away on purpose",
-     "机器学习的基本原理是"),
+     "简要解释机器学习的基本原理。"),
 ]
 
 
@@ -42,6 +45,10 @@ def main() -> None:
     ap.add_argument("--src", required=True)
     ap.add_argument("--max-tokens", type=int, default=100)
     ap.add_argument("--toolchain", default=str(pathlib.Path.home() / "kimi-k3-mlx"))
+    ap.add_argument("--raw", dest="chat", action="store_false",
+                    help="skip the chat template (base-model style completion)")
+    ap.add_argument("--thinking", action="store_true",
+                    help="open the reasoning channel (very slow at ~5 tok/s)")
     a = ap.parse_args()
 
     tc = pathlib.Path(a.toolchain)
@@ -52,6 +59,9 @@ def main() -> None:
     import mlxmem
     from mlx_lm.utils import load_model
     from reap_calibrate import build_tokenizer
+
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+    import k3_chat
 
     # Before load_model, always. An unwired model faults weights from SSD on
     # every decode step and reports a fraction of its real speed.
@@ -69,7 +79,10 @@ def main() -> None:
 
     rates = []
     for pid, role, prompt in PROMPTS:
-        ids = enc.encode_ordinary(prompt)
+        # Template it. Raw text makes an instruction-tuned model continue the
+        # prompt instead of answering it.
+        ids = (k3_chat.encode(enc, a.src, k3_chat.user(prompt), thinking=a.thinking)
+               if a.chat else enc.encode_ordinary(prompt))
         x = mx.array([ids])
         cache = model.make_cache()
 
