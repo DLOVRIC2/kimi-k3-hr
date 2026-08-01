@@ -1,0 +1,10 @@
+[project]
+name = "kimi-k3-hr"
+version = "0.1.0"
+description = "Croatian-targeted expert pruning of Kimi K3"
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml>=6.0",
+    "datasets>=3.0",
+    "huggingface-hub>=1.26",
+]

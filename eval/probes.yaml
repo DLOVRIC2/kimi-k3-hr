@@ -1,0 +1,187 @@
+# Seven-domain probe set.
+#
+# Scored INDEPENDENTLY. Never averaged — the spread between domains is the result.
+# A single mean is exactly what hides selective pruning damage.
+#
+# Run every probe at temperature 0 with a fixed seed, identical across builds.
+# Score 0-5 by hand against the rubric in each entry.
+
+meta:
+  version: 1
+  temperature: 0.0
+  seed: 20260801
+  max_tokens: 512
+
+domains:
+
+  # ---------------------------------------------------------------- control
+  - id: python
+    role: control
+    why: >
+      40% of the reference calibration corpus is code, heavily Python. These
+      experts survive any plausible prune. If this degrades, the build is broken
+      in general rather than selectively.
+    probes:
+      - id: py_impl
+        prompt: |
+          Write a Python function `merge_intervals(intervals)` that merges overlapping
+          closed intervals given as a list of (start, end) tuples. Return them sorted
+          by start. Include type hints and handle the empty-input case.
+        rubric: |
+          5 = correct, sorted, handles empty + single + fully-nested intervals, typed
+          3 = correct on the common case, misses nesting or empty
+          0 = does not run or wrong algorithm
+      - id: py_debug
+        prompt: |
+          This raises `RuntimeError: dictionary changed size during iteration`. Explain
+          why, then give the corrected version.
+
+              def prune(d, threshold):
+                  for k in d:
+                      if d[k] < threshold:
+                          del d[k]
+                  return d
+        rubric: |
+          5 = names the cause precisely, fix iterates over a snapshot or rebuilds
+          3 = fixes it without explaining why
+          0 = does not identify the mutation-during-iteration problem
+
+  # ------------------------------------------------------- rare-language code
+  - id: rare_lang
+    role: probe
+    why: >
+      Still code, so it shares the code cluster, but far less represented than
+      Python. Tests whether the cluster survived as a whole or only its dense core.
+    probes:
+      - id: elixir_genserver
+        prompt: |
+          Write an Elixir GenServer that maintains a bounded FIFO queue of at most 100
+          items. Expose `push/1` and `drain/0`. Show the full module including the
+          client API.
+        rubric: |
+          5 = idiomatic OTP, correct callbacks, bound enforced, compiles
+          3 = right shape, minor callback or arity errors
+          0 = not valid Elixir or confuses GenServer with Agent
+
+  # -------------------------------------------------------------- reasoning
+  - id: en_reasoning
+    role: control
+    why: >
+      30% of the reference corpus is English web text. Multi-step logic with no
+      domain vocabulary — general capability control.
+    probes:
+      - id: reason_sched
+        prompt: |
+          Four services deploy in sequence. B cannot start until A finishes. C needs
+          both A and B done. D needs only A. A takes 10m, B 25m, C 5m, D 40m.
+          Services can run in parallel when their dependencies allow.
+          What is the minimum total time, and which service is on the critical path?
+          Show your reasoning.
+        rubric: |
+          5 = 50m total (A→D is 50m; A→B→C is 40m), names D as critical path, reasoning sound
+          3 = correct number, muddled or partial justification
+          0 = wrong total
+
+  # ----------------------------------------------------- THE KEY PROBE: Croatian
+  - id: croatian
+    role: primary
+    why: >
+      Croatian is absent from the reference calibration corpus. The only Slavic
+      representation is Russian, at a fraction of the final 15%. If pruning damage
+      is genuinely selective, this is where it appears first and hardest — while
+      `python` above stays clean. That contrast IS the thesis.
+
+      Open question: Croatian may partially survive on the European/Slavic cluster
+      (DE-ES overlapped 2.2x chance), rather than dying outright. Unmeasured.
+    probes:
+      - id: hr_grammar
+        prompt: |
+          Objasni razliku između svršenih i nesvršenih glagola u hrvatskom jeziku.
+          Navedi tri para glagola kao primjere i za svaki par sastavi po jednu rečenicu.
+        rubric: |
+          5 = grammatically correct Croatian, aspect explained accurately, three valid
+              pairs, example sentences use the right aspect in context
+          3 = broadly correct but with case/agreement errors or one bad pair
+          1 = comprehensible but degraded — wrong cases, calques, drifting to another language
+          0 = collapse, repetition, or answers in the wrong language entirely
+      - id: hr_business
+        prompt: |
+          Napiši kratku obavijest zaposlenicima maloprodajnog lanca o promjeni radnog
+          vremena tijekom blagdana. Ton neka bude profesionalan i jasan. Najviše 80 riječi.
+        rubric: |
+          5 = natural, idiomatic business Croatian, correct register, within word limit
+          3 = understandable but stilted or with visible grammar errors
+          0 = wrong language, repetition, or unusable
+      - id: hr_translate
+        prompt: |
+          Prevedi na engleski i objasni zašto je prijevod težak:
+          "Snašao se u toj situaciji kao da mu je to svakodnevica."
+        rubric: |
+          5 = accurate translation, identifies the reflexive/idiomatic difficulty
+          3 = translation right, explanation thin
+          0 = mistranslates or does not parse the sentence
+
+  # ------------------------------------------------------------------- maths
+  - id: math
+    role: probe
+    why: >
+      Typically a distinct expert cluster from language in MoE models. Tests whether
+      the prune preserved reasoning that isn't linguistic.
+    probes:
+      - id: math_word
+        prompt: |
+          A warehouse ships 1,500 orders/day at 99.2% accuracy. Each error costs EUR 14
+          to remediate. A new system costs EUR 180,000/year and raises accuracy to 99.8%.
+          Does it pay for itself in year one? Show the arithmetic.
+        rubric: |
+          5 = 12 errors/day → 3 errors/day, 9 saved/day, ~EUR 46,000/yr saved, correct
+              conclusion (no, it does not pay back), arithmetic shown
+          3 = right method, arithmetic slip
+          0 = wrong method
+
+  # ------------------------------------------------- tool calling / structure
+  - id: tool_json
+    role: primary
+    why: >
+      What actually matters for agent work. Strict-format adherence tends to be
+      brittle under aggressive quantisation and pruning alike, so this probe
+      discriminates between both failure modes.
+    probes:
+      - id: json_strict
+        prompt: |
+          Return ONLY valid JSON, no prose, matching exactly this schema:
+          {"店": string, "city": string, "staff": integer, "open_24h": boolean,
+           "departments": [string]}
+          Describe a Croatian retail store in Split with 14 staff, not open 24h,
+          departments: bakery, deli, produce.
+        rubric: |
+          5 = parses as JSON, all keys present incl. the non-ASCII one, correct types, no prose
+          3 = parses but wraps in a code fence or adds commentary
+          0 = does not parse
+      - id: json_toolcall
+        prompt: |
+          You have one tool:
+            search_inventory(store_id: str, sku: str, include_reserved: bool = False)
+          The user asks: "Ima li trgovina ST-042 na stanju artikl 88231, uključujući rezervirano?"
+          Emit the single tool call as JSON with keys "name" and "arguments". Nothing else.
+        rubric: |
+          5 = correct name, store_id ST-042, sku 88231, include_reserved true — parsed from Croatian
+          3 = right call but misses include_reserved (the Croatian cue)
+          0 = wrong tool shape or fails to parse the Croatian
+
+  # -------------------------------------------------------------- long context
+  - id: long_ctx
+    role: probe
+    why: >
+      Tests the KDA/AttnRes state behaviour rather than knowledge. Also the place
+      where thin memory headroom shows up as a hard failure rather than degradation.
+    probes:
+      - id: ctx_retrieve
+        prompt_file: fixtures/long_context_32k.txt
+        prompt_suffix: |
+          Using only the document above, list every store that reported a stock
+          discrepancy in Q3, with its region. Do not infer any store not named.
+        rubric: |
+          5 = all discrepancy stores found, no hallucinated entries, regions correct
+          3 = finds most, one miss or one invented
+          0 = fails to retrieve or invents freely

@@ -1,0 +1,32 @@
+# HYPOTHESIS ARM — Croatian + code.
+#
+# Their own ablation found Chinese+code beat Chinese-only for Chinese generation:
+# keeping the code cluster helps a target language rather than competing with it.
+# This tests whether that holds for a Slavic low-resource language.
+#
+# Russian and Polish are included deliberately, not as filler — if Croatian rides
+# the Slavic cluster, reinforcing its neighbours should lift it too. Drop them in
+# an ablation to isolate the effect.
+name: hr-code
+sources:
+  - tag: hr
+    ratio: 0.35
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.hr
+  - tag: code
+    ratio: 0.35
+    kind: local
+    path: ~/code/workspace
+    glob: "**/*.py"
+    min_chars: 400
+  - tag: sl_neighbours
+    ratio: 0.15
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.sr
+  - tag: en
+    ratio: 0.15
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.en

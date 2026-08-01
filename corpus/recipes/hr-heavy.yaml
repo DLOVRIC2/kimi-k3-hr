@@ -1,0 +1,29 @@
+# ABLATION — Croatian dominant, minimal code.
+#
+# Their Chinese ablation showed language-only calibration produced "vague but no
+# loop" output, worse than language+code. If that pattern repeats here, this arm
+# should UNDERPERFORM hr-code — which would be a clean replication of their finding
+# on a different language family.
+name: hr-heavy
+sources:
+  - tag: hr
+    ratio: 0.70
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.hr
+  - tag: sl_neighbours
+    ratio: 0.15
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.sr
+  - tag: code
+    ratio: 0.10
+    kind: local
+    path: ~/code/workspace
+    glob: "**/*.py"
+    min_chars: 400
+  - tag: en
+    ratio: 0.05
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.en

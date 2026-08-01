@@ -1,0 +1,39 @@
+# CONTROL ARM — replicates the reference calibration mix used by the published
+# REAP builds (40% code / 30% English / 15% Chinese / 15% other languages).
+#
+# You need this. Without a control you cannot claim a Croatian-targeted build is
+# better, only that it exists. Build this first, then hr-code, and compare on the
+# same probe set.
+name: control-reference-mix
+sources:
+  - tag: code
+    ratio: 0.40
+    kind: local
+    path: ~/code/workspace
+    glob: "**/*.py"
+    min_chars: 400
+  - tag: en
+    ratio: 0.30
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.en
+  - tag: zh
+    ratio: 0.15
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.zh
+  - tag: de
+    ratio: 0.05
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.de
+  - tag: ru
+    ratio: 0.05
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.ru
+  - tag: fr
+    ratio: 0.05
+    kind: hf
+    dataset: wikimedia/wikipedia
+    config: 20231101.fr

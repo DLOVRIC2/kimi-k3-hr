@@ -1,0 +1,7 @@
+build/
+models/
+.venv/
+__pycache__/
+*.npz
+*.safetensors
+eval/fixtures/*.txt
