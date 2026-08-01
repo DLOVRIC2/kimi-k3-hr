@@ -1,0 +1,84 @@
+[mem] wired limit 515 GB (Metal recommendation, same value mlx-lm uses)
+[hr] loading $K3_BUILD ...
+[hr] loaded in 51s | peak 349 GB
+
+======================================================================
+[hr-prose]  (croatian)
+======================================================================
+PROMPT: Objasni ukratko razliku između svršenih i nesvršenih glagola u hrvatskom jeziku:
+prefill 34 tok in 9.9s
+
+ svršeni glagoli označavaju radnju koja je završena ili ima jasnu granicu (napisati, pročitati), a nesvršeni radnju koja traje ili se ponavlja (pisati, čitati). U engleskom jeziku ova se razlika izražava posebnim glagolskim vremenima i oblicima, a ne prefiksima kao što
+
+--> 100 tok in 19.4s = 5.15 tok/s
+
+======================================================================
+[hr-business]  (croatian)
+======================================================================
+PROMPT: Napiši kratku obavijest zaposlenicima trgovine o promjeni radnog vremena tijekom blagdana:
+prefill 34 tok in 1.0s
+
+ 1. prosinca, 22. prosinca, 25. prosinca, 26. prosinca, 30. prosinca, 1. siječnja, 2. siječnja, 1. svibnja, 2. svibnja, 22. lipnja, 27. lipnja, 5. kolovoza, 8. listopada, 15. kolovoza, 
+
+--> 100 tok in 19.3s = 5.18 tok/s
+
+======================================================================
+[hr-code]  (croatian+code)
+======================================================================
+PROMPT: # Napiši Python funkciju koja provjerava je li OIB (hrvatski osobni identifikacijski broj) ispravan.
+def provjeri_oib(oi
+prefill 49 tok in 1.4s
+
+ # type hint
+    if len(oib) != 11:
+        return False
+    if not oib.isdigit():
+        return False
+    return True
+
+# Napiši Python funkciju koja provjerava je li datum ispravan.
+def provjeri_datum(datum: str) -> bool:
+    if len(datum) != 10:
+        return False
+    if not datum[0].isdigit() or not datum[1].isdigit() or
+
+--> 100 tok in 19.2s = 5.20 tok/s
+
+======================================================================
+[code]  (control)
+======================================================================
+PROMPT: def merge_intervals(intervals):
+    """Merge overlapping intervals."""
+prefill 13 tok in 0.5s
+
+    intervals = sorted(intervals)
+    merged = []
+    for interval in intervals:
+        if not merged or interval[0] > merged[-1][1]:
+            merged.append(list(interval))
+        else:
+            merged[-1][1] = max(merged[-1][1], interval[1])
+    return merged
+
+
+def merge_intervals_with_gap(intervals, gap):
+    """Merge overlapping intervals with a gap."""
+    intervals = sorted(intervals)
+    merged = []
+    for interval
+
+--> 100 tok in 19.2s = 5.20 tok/s
+
+======================================================================
+[zh]  (negative control — pruned away on purpose)
+======================================================================
+PROMPT: 机器学习的基本原理是
+prefill 4 tok in 0.3s
+
+统计学习，它通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过统计学习的方法，通过
+
+--> 100 tok in 19.2s = 5.22 tok/s
+
+======================================================================
+mean decode: 5.19 tok/s
+[hr] HR-SMOKE-DONE
