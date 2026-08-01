@@ -536,3 +536,62 @@ Ranked by how much time they'd have saved:
 7. **Pilot at n=10 before committing hours.** Three bugs, twenty minutes, two of them
    the kind that generate false findings.
 8. **Check the whole machine before blaming the job you're watching.**
+
+---
+
+## Phase 8 — The sweep found four more before it could produce a number
+
+Launching the full run surfaced #17–#19 above, and then three more that only appear at
+scale or in thinking mode. Recorded here because the pattern is the point: **every
+attempt to run the benchmark found a way the benchmark was lying.**
+
+### 20. Thinking mode scored the chain of thought, not the answer
+
+**Symptom:** K3 with `--thinking` scored **30% on Croatian** — chance is 25%. Half the
+outputs read `<|reserved_special_token_3|>response...`, the rest were raw reasoning
+("We need answer only 1/2/3/4. Need identi...").
+**Cause:** with thinking on, K3 emits its chain of thought and *then* opens a second
+channel, `<|open|>response<|sep|>`, before answering. Neither `OPEN` nor `SEP` is a stop
+token, so the whole thing came back as one blob and the multiple-choice regex matched
+whatever digit the model reasoned about **first** — uncorrelated with its conclusion.
+The visible markup is the encode-side bug (#10) **mirrored on decode**: `enc.decode`
+renders control ids as the generic placeholders the toolchain registered.
+**Fix:** `split_channels()` — response is whatever follows the last separator, control
+ids stripped.
+**Lesson:** the same tokenizer defect produced two completely different-looking failures
+a week apart, one on encode and one on decode. Once you find a control-token bug in one
+direction, immediately check the other.
+
+### 21. K3's answer budget was manufacturing its failures
+
+**Symptom:** 11.7% echo rate and only 84% parsed on the non-thinking arm.
+**Cause:** `answer_budget = 24` for MLX. **Median generation for a multiple-choice
+answer is 1 token** — the model emits the digit and stops — so 24 looked generous. But
+it binds on exactly the items where K3 opens with a preamble or restates the passage:
+10 of 103 items hit the cap, and 12 of the 18 unparsed answers were cut off before
+reaching a digit. Meanwhile every ollama model had 2048.
+**Fix:** 24 → 256. Costs wall-clock only on that ~10%, since the median is unchanged.
+**Lesson:** **the fourth budget-induced fake result** (#12, #13, #19, #21). A median
+tells you nothing about whether a cap is safe — the tail is the whole question. Worse,
+this one was self-inflicted: I fixed the identical bug for ollama in the same session
+and left the local model capped, which quietly biased the comparison *against* the model
+the project is about.
+
+### 22. MLXBackend never reported truncation
+
+**Symptom:** K3's `truncated_rate` was 0% in every result, including runs where items
+demonstrably hit the cap.
+**Cause:** `MLXBackend.generate` never set the field, so it took the dataclass default.
+**Fix:** `truncated=len(out) >= max_tokens`.
+**Lesson:** the field that would have exposed #21 immediately was hardcoded to "fine".
+A health metric that cannot report bad news is worse than no metric — it actively
+launders the failure.
+
+### Preliminary: K3 barely reasons even with thinking on
+
+With the channel split working, thinking-mode items come back as `think=36 chars,
+gen=4` — K3 opens the response channel and answers immediately. If that holds at n=20,
+**the thinking-mode confound is not real**, and the weak Croatian result stands on its
+own rather than being an artefact of how we invoked the model. That would be a
+convenient answer, which is exactly why it needs the full probe and not the four items
+it is currently based on.

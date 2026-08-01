@@ -9,3 +9,8 @@
 [eval] page-ins: 73.3 GB load, 0.13 GB early-inference (lazy mmap), 0.009 GB/min sustained (resident)
 
 [eval] wrote results/full/eval-K3-thinking-probe-2026-08-01.json  (12.8 min)
+[mem] wired limit 515 GB (Metal recommendation, same value mlx-lm uses)
+[mlx] loading $K3_BUILD ...
+[mlx] loaded in 40s | peak 349 GB
+
+[eval] K3-thinking-probe :: belebele_hrv
