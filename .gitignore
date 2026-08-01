@@ -5,3 +5,4 @@ __pycache__/
 *.npz
 *.safetensors
 eval/fixtures/*.txt
+!eval/fixtures/*.key.json
