@@ -1,0 +1,14 @@
+[pair] target set: 200 items shared by all 4 arms
+[pair] K3-REAP80-hr-code: 48/200 english items reusable, 152 to run
+[pair] gemma4-31b: 48/200 english items reusable, 152 to run
+[pair] gpt-oss-20b: 48/200 english items reusable, 152 to run
+[pair] gpt-oss-120b: 48/200 english items reusable, 152 to run
+=== [11:27:55] START k3-eng-paired
+=== [12:03:05] END   k3-eng-paired (exit 0)
+=== [12:03:09] START gpt-oss-20b-eng-paired
+=== [12:10:15] END   gpt-oss-20b-eng-paired (exit 0)
+=== [12:10:19] START gemma4-31b-eng-paired
+=== [12:13:08] END   gemma4-31b-eng-paired (exit 0)
+=== [12:13:12] START gpt-oss-120b-eng-paired
+=== [12:20:45] END   gpt-oss-120b-eng-paired (exit 0)
+=== [12:20:45] PAIRING COMPLETE

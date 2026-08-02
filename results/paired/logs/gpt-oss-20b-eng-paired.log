@@ -1,0 +1,15 @@
+[eval] restricted to 200 fixed belebele items
+
+[eval] gpt-oss:20b :: belebele_eng
+    resuming: 48 items already done
+    50/200  acc 96.0%
+    75/200  acc 90.7%
+    100/200  acc 87.0%
+    150/200  acc 84.7%
+    175/200  acc 85.7%
+    -> accuracy 86.5%  parse 91.0%  n=200
+
+[eval] peak wired 28 GB | peak rss 18 GB | peak compressed 5 GB
+[eval] page-ins: 0.0 GB load, 3.30 GB early-inference (lazy mmap), 0.011 GB/min sustained (resident)
+
+[eval] wrote results/paired/eval-gpt-oss-20b-2026-08-02.json  (7.1 min)

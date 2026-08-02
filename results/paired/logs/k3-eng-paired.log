@@ -1,0 +1,18 @@
+[mem] wired limit 515 GB (Metal recommendation, same value mlx-lm uses)
+[mlx] loading $K3_BUILD ...
+[mlx] loaded in 49s | peak 349 GB
+[eval] restricted to 200 fixed belebele items
+
+[eval] K3-REAP80-hr-code :: belebele_eng
+    resuming: 48 items already done
+    50/200  acc 42.0%
+    75/200  acc 37.3%
+    100/200  acc 37.0%
+    150/200  acc 36.0%
+    175/200  acc 35.4%
+    -> accuracy 35.0%  parse 63.5%  n=200
+
+[eval] peak wired 471 GB | peak rss 325 GB | peak compressed 5 GB
+[eval] page-ins: 72.5 GB load, 0.68 GB early-inference (lazy mmap), 0.016 GB/min sustained (resident)
+
+[eval] wrote results/paired/eval-K3-REAP80-hr-code-2026-08-02.json  (34.3 min)

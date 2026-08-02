@@ -27,6 +27,17 @@ from dataclasses import dataclass
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FULL = ROOT / "results" / "full"
 CKPT = FULL / "checkpoints"
+PAIRED = ROOT / "results" / "paired" / "checkpoints"
+
+# Read English from the paired rerun when it exists.
+#
+# The original sweep drew 200 items per language independently and got 48 in
+# common, so its English score was measured on a DIFFERENT and, as it turned
+# out, harder set of passages than its Croatian score. Every cross-language
+# comparison built on that is confounded by item difficulty. results/paired/
+# re-scores English on the exact Croatian item set; results/full/ is kept
+# intact because it is what the first analysis was based on.
+USE_PAIRED = PAIRED.exists()
 
 # Display order is deliberate: the pruned build first, then comparators by
 # descending size, so the size/score inversion is visible by reading downward.
@@ -57,11 +68,21 @@ RESULT_JSON = {
 
 # ------------------------------------------------------------------ loading
 
-def load_items(model: str, task: str) -> list[dict]:
-    p = CKPT / f"{model}-{task}.jsonl"
+def load_items(model: str, task: str, paired: bool | None = None) -> list[dict]:
+    paired = USE_PAIRED if paired is None else paired
+    p = PAIRED / f"{model}-{task}.jsonl" if paired else CKPT / f"{model}-{task}.jsonl"
+    if not p.exists():
+        p = CKPT / f"{model}-{task}.jsonl"   # humaneval is unaffected by pairing
     if not p.exists():
         return []
     return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+
+
+def paired_items(model: str) -> tuple[list[str], dict, dict]:
+    """The two language runs indexed by item id, restricted to shared items."""
+    hrv = {r["id"]: r for r in load_items(model, "belebele_hrv")}
+    eng = {r["id"]: r for r in load_items(model, "belebele_eng")}
+    return sorted(set(hrv) & set(eng)), hrv, eng
 
 
 def load_summary(model: str) -> dict:
@@ -130,6 +151,22 @@ def mcnemar(b: int, c: int) -> tuple[int, int, float]:
         return b, c, 1.0
     tail = sum(math.comb(n, i) for i in range(min(b, c) + 1)) / (2 ** n)
     return b, c, min(1.0, 2 * tail)
+
+
+def sign_test(deltas: list[int]) -> tuple[int, int, float]:
+    """Exact two-sided sign test on per-item differences.
+
+    Used for difference-in-differences: whether K3's Croatian-vs-English
+    behaviour differs from a comparator's on the SAME items. Ties carry no
+    information and are dropped, exactly as in McNemar.
+    """
+    pos = sum(1 for d in deltas if d > 0)
+    neg = sum(1 for d in deltas if d < 0)
+    n = pos + neg
+    if n == 0:
+        return pos, neg, 1.0
+    tail = sum(math.comb(n, k) for k in range(min(pos, neg) + 1)) / (2 ** n)
+    return pos, neg, min(1.0, 2 * tail)
 
 
 def stars(p: float) -> str:
@@ -239,36 +276,91 @@ def t_initiation() -> str:
     return "\n".join(out)
 
 
-def t_gap() -> str:
-    """English-vs-Croatian, paired where the data allows it."""
-    out = ["## Language gap", "",
-           "Belebele is fully parallel -- the same items exist in every language -- so",
-           "the paired test is the correct one wherever the two runs share items.", ""]
-    rows = []
+def _lang_table(field: str, title: str, note: str) -> str:
+    """Croatian vs English on identical items, by McNemar."""
+    out = [f"### {title}", "", note, "",
+           "| model | Croatian | English | gap | b | c | p (McNemar) |",
+           "|---|---|---|---|---|---|---|"]
     for m in MODELS:
-        hrv = {r["id"]: r for r in load_items(m, "belebele_hrv")}
-        eng = {r["id"]: r for r in load_items(m, "belebele_eng")}
-        both = sorted(set(hrv) & set(eng))
-        h, e = score(m, "belebele_hrv"), score(m, "belebele_eng")
-        z, pz = two_proportion_z(h.correct, h.n, e.correct, e.n)
-        # b: right in Croatian, wrong in English. c: the reverse.
-        b = sum(1 for i in both if hrv[i]["correct"] and not eng[i]["correct"])
-        c = sum(1 for i in both if eng[i]["correct"] and not hrv[i]["correct"])
-        _, _, pm = mcnemar(b, c)
-        rows.append((m, h.acc, e.acc, (e.acc - h.acc) * 100, z, pz, len(both), b, c, pm))
+        ids, hrv, eng = paired_items(m)
+        n = len(ids)
+        ha = sum(bool(hrv[i][field]) for i in ids) / n
+        ea = sum(bool(eng[i][field]) for i in ids) / n
+        b = sum(1 for i in ids if hrv[i][field] and not eng[i][field])
+        c = sum(1 for i in ids if eng[i][field] and not hrv[i][field])
+        _, _, p = mcnemar(b, c)
+        out.append(f"| {m} | {ha:.1%} | {ea:.1%} | {(ea-ha)*100:+.1f} | {b} | {c} | "
+                   f"{p:.3g} {stars(p)} |")
+    return "\n".join(out)
 
-    out += ["| model | hrv | eng | gap | z (unpaired) | p | n paired | b | c | p (McNemar) |",
-            "|---|---|---|---|---|---|---|---|---|---|"]
-    for m, ha, ea, g, z, pz, npair, b, c, pm in rows:
-        out.append(f"| {m} | {ha:.1%} | {ea:.1%} | {g:+.1f} | {z:.2f} | {pz:.3g} {stars(pz)} "
-                   f"| {npair} | {b} | {c} | {pm:.3g} {stars(pm)} |")
 
-    npair = rows[0][6]
-    if npair < 150:
-        out += ["", f"**The paired columns are underpowered at n={npair}.** Sampling 200 items "
-                    "per language independently produced only that many in common, so the "
-                    "McNemar figures here are indicative and the unpaired test carries the "
-                    "claim. `eval/pair_up.py` closes this."]
+def t_gap() -> str:
+    """English-vs-Croatian on matched items, split by accuracy and by compliance."""
+    n = len(paired_items(MODELS[0])[0])
+    out = ["## Language gap (paired, n=%d)" % n, "",
+           "Belebele is fully parallel, so every model answers the SAME passages in both",
+           "languages and the comparison is by McNemar. `b` counts items right in Croatian",
+           "and wrong in English; `c` the reverse. Items both languages got right, or both",
+           "wrong, carry no information about the difference and are excluded.", "",
+           _lang_table("correct", "Accuracy",
+                       "All three general models are significantly BETTER at English. K3 is "
+                       "the only one that is not."),
+           "",
+           _lang_table("parsed", "Response rate",
+                       "Whether the model produced a parseable answer at all, rather than "
+                       "an echo or silence."),
+           "",
+           _lang_table("echoed", "Echo rate",
+                       "Restating the passage instead of answering it."),
+           ""]
+
+    # Difference-in-differences. The comparators establish what a general model
+    # does on these items; the question is whether K3 departs from it, not
+    # whether K3 has an asymmetry in isolation.
+    out += ["### Is K3's asymmetry distinctive?", "",
+            "Per item, `d = responded(Croatian) - responded(English)`. A sign test on",
+            "`d_K3 - d_comparator` asks whether K3 leans Croatian *more than a general",
+            "model does on the same passages* -- which is the actual claim.", "",
+            "| comparison | K3 more Croatian-favouring | less | p (sign test) |",
+            "|---|---|---|---|"]
+    ids, hrv, eng = paired_items(MODELS[0])
+    dk = {i: int(hrv[i]["parsed"]) - int(eng[i]["parsed"]) for i in ids}
+    for c in MODELS[1:]:
+        cids, chrv, ceng = paired_items(c)
+        shared = sorted(set(ids) & set(cids))
+        deltas = [dk[i] - (int(chrv[i]["parsed"]) - int(ceng[i]["parsed"])) for i in shared]
+        pos, neg, p = sign_test(deltas)
+        out.append(f"| K3 vs {c} | {pos} items | {neg} | {p:.3g} {stars(p)} |")
+    return "\n".join(out)
+
+
+def t_unpaired_contrast() -> str:
+    """What the original unpaired sampling reported, and why it differed.
+
+    Kept because the correction is itself a result: it is the clearest available
+    demonstration of what unmatched sampling costs, using real data rather than
+    a hypothetical.
+    """
+    out = ["## What the unpaired sampling reported", "",
+           "The first sweep drew 200 items per language with the same seed, which selects",
+           "DIFFERENT passages in each language config -- only 48 overlapped. Re-scoring",
+           "English on the Croatian item set moves every model, and not in one direction:",
+           "",
+           "| model | gap, unpaired (n=48 shared) | gap, paired (n=200) | shift |",
+           "|---|---|---|---|"]
+    for m in MODELS:
+        h_old = {r["id"]: r for r in load_items(m, "belebele_hrv", paired=False)}
+        e_old = {r["id"]: r for r in load_items(m, "belebele_eng", paired=False)}
+        old_gap = (sum(r["correct"] for r in e_old.values()) / len(e_old)
+                   - sum(r["correct"] for r in h_old.values()) / len(h_old)) * 100
+        ids, hrv, eng = paired_items(m)
+        new_gap = (sum(eng[i]["correct"] for i in ids)
+                   - sum(hrv[i]["correct"] for i in ids)) / len(ids) * 100
+        out.append(f"| {m} | {old_gap:+.1f} | {new_gap:+.1f} | {new_gap-old_gap:+.1f} |")
+    out += ["", "The English item set drawn by the original sweep was harder for every model.",
+            "That inflated K3's apparent Croatian advantage and simultaneously masked the",
+            "comparators' real English advantage -- an error in both directions at once,",
+            "which is what unmatched sampling does."]
     return "\n".join(out)
 
 
@@ -315,6 +407,7 @@ TABLES = {
     "headline": t_headline,
     "initiation": t_initiation,
     "gap": t_gap,
+    "unpaired": t_unpaired_contrast,
     "cost": t_cost,
     "versus": t_versus,
 }

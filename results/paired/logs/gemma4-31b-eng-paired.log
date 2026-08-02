@@ -1,0 +1,15 @@
+[eval] restricted to 200 fixed belebele items
+
+[eval] gemma4:31b :: belebele_eng
+    resuming: 48 items already done
+    50/200  acc 96.0%
+    75/200  acc 92.0%
+    100/200  acc 89.0%
+    150/200  acc 86.7%
+    175/200  acc 87.4%
+    -> accuracy 87.5%  parse 91.5%  n=200
+
+[eval] peak wired 55 GB | peak rss 53 GB | peak compressed 5 GB
+[eval] page-ins: 0.0 GB load, 4.66 GB early-inference (lazy mmap), 0.020 GB/min sustained (resident)
+
+[eval] wrote results/paired/eval-gemma4-31b-2026-08-02.json  (2.8 min)
