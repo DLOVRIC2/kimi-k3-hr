@@ -587,11 +587,121 @@ demonstrably hit the cap.
 A health metric that cannot report bad news is worse than no metric — it actively
 launders the failure.
 
-### Preliminary: K3 barely reasons even with thinking on
+### Resolved: the thinking-mode confound is not real
 
-With the channel split working, thinking-mode items come back as `think=36 chars,
-gen=4` — K3 opens the response channel and answers immediately. If that holds at n=20,
-**the thinking-mode confound is not real**, and the weak Croatian result stands on its
-own rather than being an artefact of how we invoked the model. That would be a
-convenient answer, which is exactly why it needs the full probe and not the four items
-it is currently based on.
+Final probe, n=20: **35.0%** with thinking on, against **40.5%** at n=200 with it off.
+Reasoning mode does not rescue K3, so its weak scores are a property of the build rather
+than of how we invoked it. The main comparison stands.
+
+Worth recording honestly: the *broken* probe scored 30% and the fixed one scored 35%. The
+channel-splitting fix (#20) was necessary for the number to mean anything, but it did not
+change the conclusion — I would have reached the same answer with a harness that was
+measuring the wrong text. Being right for the wrong reason is not a validation of the
+method, and the only reason I know that is that I fixed it and re-ran.
+
+K3's channel usage turned out to be erratic rather than absent: some items emit
+`<|open|>response<|sep|>` and answer in 4 tokens, others emit **no channel markers at
+all** and ramble for 400+ tokens before stopping naturally. One item produced a genuine
+21,796-character chain. That inconsistency is itself a symptom — see Finding 1 in
+RESULTS.md.
+
+---
+
+## Phase 9 — The sweep that finished
+
+Ran unattended overnight, 2026-08-01 23:35 → 2026-08-02 03:44. All four arms exit 0.
+2,276 scored items. Results and findings in `RESULTS.md`; this section records how the
+run behaved and what was learned *during analysis*, which is the part that does not show
+up in a results table.
+
+### Arm timings (measured, for planning future runs)
+
+| arm | wall | notes |
+|---|---|---|
+| k3-thinking-probe (n=20) | 16 min | 5.43 tok/s |
+| k3-full | **133 min** | hrv 31m, eng 38m, HumanEval 64m |
+| gpt-oss:20b full | 39 min | |
+| gemma4:31b full | 32 min | |
+| gpt-oss:120b full | 44 min | |
+| **total** | **~4 h 9 min** | |
+
+K3 loads 326 GB in **40–48 s** (~7 GB/s off SSD), so keeping a model resident across
+arms is not worth designing around. Earlier estimates assumed a load cost that does not
+exist.
+
+### Unattended-run health checklist
+
+Everything below was verified before leaving it overnight, and all of it held:
+
+- **Sleep blocked** — `caffeinate -i` holds `PreventUserIdleSystemSleep`. Check with
+  `pmset -g assertions`. Note `caffeinate -i` prevents *idle* sleep only.
+- **Survives the session** — the launcher shows **ppid 1**, i.e. reparented to launchd,
+  so closing the terminal or ending the agent session cannot kill it. Verify with
+  `ps -o pid=,ppid=`. This is what `nohup … & disown` buys, and it is worth checking
+  rather than assuming — a tool timeout killed backgrounded children twice (#9).
+- **No leak** — over 745 samples / 52 min: RSS flat at 325 GB, wired flat at 469 GB,
+  compressed flat at 3.4 GB, swap *decreasing*. Compressed memory is the signal; `free`
+  is meaningless on macOS.
+- **A failing arm does not stall the queue** — `sweep.sh` uses `set -u` but deliberately
+  not `set -e`, so an arm that dies logs its exit code and the sweep continues.
+
+### 23. The language comparison was never paired
+
+**Symptom:** went to run McNemar on the Croatian-English gap — the right test, since
+Belebele is fully parallel — and found only **48 of 200 items in common** between the
+two languages.
+**Cause:** `ds.shuffle(seed).select(range(200))` is applied to each language's dataset
+*independently*. Same seed, but the source row order differs between the `hrv_Latn` and
+`eng_Latn` configs, so the same seed selects different items.
+**Fix:** not yet applied. Reported as limitation #1 in RESULTS.md and the gap is
+evaluated with an unpaired two-proportion z-test instead (still p=0.00064).
+**Lesson:** **the single reason to choose Belebele over any other benchmark is that it
+is parallel** — the same 900 items in every language, which is what makes
+`score(eng) − score(hrv)` isolate language ability from general capability. The harness
+docstring says exactly this. And then the sampling threw that property away, silently,
+because `shuffle(seed)` *looks* deterministic across configs. A design property has to
+be enforced in code, not stated in a comment: the fix is to select item ids once and
+intersect across languages.
+
+### 24. Half of K3's HumanEval answers were empty, and I nearly reported it as a coding score
+
+**Symptom:** K3 tracking 26% pass@1, with `gen_tokens` **median 0**.
+**Cause:** genuine model behaviour, not a harness bug — on roughly half of prompts the
+first token K3 predicts is a stop token, so it emits nothing at all. With an empty body
+the harness reassembles the bare signature, the function returns `None`, and the test
+fails with `AssertionError` (60 of them).
+**Verification:** given four budget-related false results already (#12, #13, #19, #21),
+I checked the pilot rather than trusting the interpretation — `gen_tokens` there was
+`[640, 0, 0, 192, 0, 311, 287, 0, 83, 197]`, i.e. **4 of 10 already empty**. Pre-existing
+and invisible at n=10, not a regression from the channel-splitting change.
+**Lesson:** this is the finding, not a defect — see Finding 1. But the process matters
+more than the result: the reflex to check a suspicious number against a prior run before
+interpreting it is what separated "K3 cannot code" (wrong) from "K3 codes at 51% and is
+silent half the time" (right). Every aggregate score in this project turned out to be
+hiding a bimodal distribution.
+
+---
+
+## State of the repo (2026-08-02)
+
+**Complete and pushed.** `git status` clean, `origin/main` in sync.
+
+| | |
+|---|---|
+| `LOG.md` | this file — 24 entries, the build narrative |
+| `RESULTS.md` | the full sweep, findings, significance tests, limitations |
+| `README.md` | thesis, arms, setup, licence |
+| `results/full/` | 13 per-item checkpoints (2,276 items), 5 memtraces, 5 result JSONs, arm logs |
+| `results/pilot/` | the n=10 pilot that caught three harness bugs |
+| `results/invalid/` | quarantined runs — the capped-budget K3 arm and the pre-channel-fix thinking probe, kept because they are evidence for #20 and #21 |
+| `results/overlap-*.txt`, `retention-*.txt` | the expert-overlap matrix and the reference-mix counterfactual |
+
+**Not in this repo:** `$MODELS/` holds the conceptual layer
+(`docs/01-concepts.md`, `02-math.md`, `03-protocol.md`, `04-choosing-experts.md`,
+`lab-notes.html`, `tools/fitcalc.py`, `tools/bwtest.py`) plus the 1.4 TB source weights
+and the 326 GB build. It has a git dir with **zero commits and no remote** — the build
+narrative is safe here, but that teaching material is not backed up anywhere.
+
+**Open work** is enumerated as limitations 1–5 in RESULTS.md: paired resampling, the
+control arm, the `hr-heavy`/`hr-only` ablations, thinking mode at proper n, and variance
+across prune plans.
