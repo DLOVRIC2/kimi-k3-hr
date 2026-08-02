@@ -503,42 +503,6 @@ HumanEval is 2.9 h and 55% of that is K3 alone.
 
 ---
 
-## Open questions
-
-1. **Thinking-mode confound (blocking for publication).** K3 is documented as always-on
-   reasoning, but we run it with `thinking=False` and a 24-token budget — while ollama
-   *ignores* `think: false` on gpt-oss, which therefore reasons freely. The comparison
-   may be unfair to K3 in precisely the dimension being measured. Probe: Croatian
-   Belebele, n=20, `--thinking`.
-2. **No control arm built yet.** `reap_subset --keep-sources code,en,zh,de,ru,fr`
-   reproduces the reference mix from the same calibration run. Without it there is a
-   model but no claim.
-3. **Does language+code beat language-only?** The published ablation found Chinese+code
-   beat Chinese-only for Chinese generation. `hr-heavy` (hr,sr) and `hr-only` arms test
-   whether that replicates on a Slavic low-resource language.
-
----
-
-## Transferable lessons
-
-Ranked by how much time they'd have saved:
-
-1. **A tokenizer bug is indistinguishable from a broken model.** Verify the chat
-   template before drawing any conclusion about capability.
-2. **The benchmark measures your configuration until proven otherwise.** A 20% score
-   next to a 90% score on a related task is a harness bug, not a capability profile.
-3. **Quantisation profiles leave things untouched.** In a bandwidth-bound regime the
-   non-expert weights dominate, because they're read every token. One flag: 4.5×.
-4. **Calibrate once, subset many.** Separate runs confound variance with the effect
-   you're trying to measure.
-5. **When a consumer reads only a prefix, validate the prefix**, not the whole file.
-6. **Cumulative counters can't diagnose pathology.** Use a rate over a tail window.
-7. **Pilot at n=10 before committing hours.** Three bugs, twenty minutes, two of them
-   the kind that generate false findings.
-8. **Check the whole machine before blaming the job you're watching.**
-
----
-
 ## Phase 8 — The sweep found four more before it could produce a number
 
 Launching the full run surfaced #17–#19 above, and then three more that only appear at
@@ -705,3 +669,60 @@ narrative is safe here, but that teaching material is not backed up anywhere.
 **Open work** is enumerated as limitations 1–5 in RESULTS.md: paired resampling, the
 control arm, the `hr-heavy`/`hr-only` ablations, thinking mode at proper n, and variance
 across prune plans.
+
+---
+
+## Open questions (2026-08-02)
+
+Item 1 below was the blocking one and is now **resolved**: thinking mode scores 35.0%
+against 40.5% non-thinking, so K3's weak results are a property of the build, not of how
+we invoked it. The rest stand, and are enumerated with cost estimates as limitations 1–5
+in `RESULTS.md`.
+
+1. ~~Thinking-mode confound~~ — **resolved**, see Phase 8.
+2. **The language comparison is unpaired** (#23). Belebele's parallel design was never
+   exploited; only 48 of 200 items overlap. The gap survives an unpaired test
+   (p=0.00064) but a matched-subset rerun is strictly better and costs ~1 h.
+3. **No control arm.** `reap_subset --keep-sources code,en,zh,de,ru,fr` reproduces the
+   reference mix from the *same* calibration run. Without it, Finding 2 shows this build
+   favours Croatian but cannot attribute that to the corpus rather than to pruning
+   damage generally. **This is the gap between "a model" and "a claim."**
+4. **`hr-heavy` and `hr-only` arms unbuilt**, so language+code vs language-only is
+   untested on a Slavic language.
+5. **One build, one seed** — no variance estimate across prune plans.
+
+---
+
+## Transferable lessons
+
+Ranked by how much time they would have saved.
+
+1. **A tokenizer bug is indistinguishable from a broken model.** Verify the chat template
+   before concluding anything about capability — and once you find a control-token bug in
+   one direction, immediately check the other (#10 encode, #20 decode).
+2. **The benchmark measures your configuration until proven otherwise.** Four separate
+   fake results came from token budgets (#12, #13, #19, #21). A score that contradicts a
+   related score is a harness bug, not a capability profile.
+3. **Aggregate scores hide bimodal distributions.** Every headline number in this project
+   was concealing a "did it respond at all" split. 25% pass@1 meant 51% correct on half
+   the prompts and silence on the rest. Always report the conditional alongside the mean.
+4. **Assert the properties you depend on, in code.** The manifest contract (#3), the
+   checkpoint key (#18) and Belebele's parallelism (#23) were all documented in comments
+   and all silently violated. Two now refuse to run; the third should.
+5. **Quantisation profiles leave things untouched.** In a bandwidth-bound regime the
+   *non*-expert weights dominate, because they are read every token regardless of
+   routing. One flag: 4.5×.
+6. **Check a suspicious number against a prior run before interpreting it** (#24). That
+   reflex is the only thing that separated "K3 cannot code" from "K3 codes at 51% and is
+   silent half the time."
+7. **Calibrate once, subset many.** Separate calibration runs confound run-to-run
+   variance with the effect being measured.
+8. **When a consumer reads only a prefix, validate the prefix**, not the whole file.
+9. **Cumulative counters cannot diagnose pathology.** Use a rate over a tail window.
+10. **Pilot before committing hours — but do not trust a pilot to find tail failures.**
+    n=10 caught three harness bugs in twenty minutes (#12, #13, #14) and completely
+    missed two others (#19, #24) because heavy-tailed failures need scale to appear.
+11. **A metric that cannot report bad news is worse than no metric** (#22). K3's
+    truncation rate read 0% because the field was never set.
+12. **Check the whole machine before blaming the job you are watching** — the memory
+    exhaustion was a Docker VM idle for twelve days, not the calibration.
