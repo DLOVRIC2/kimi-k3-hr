@@ -213,6 +213,11 @@ Every arm checkpoints per item, so an interrupted run costs at most one item. Th
 
 ## Licence and provenance
 
-Kimi K3 is released under an MIT-structured licence permitting derivative works; restrictions apply only to Model-as-a-Service operators above $20M monthly revenue or 100M MAU. Neither applies here. Moonshot consistently say "open weight", never "open source" — worth matching that language.
+**The code, documentation and measurements here are MIT** ([`LICENSE`](LICENSE)). The corpora, benchmark content and model-derived artifacts are not — they keep their own terms, and [`NOTICE`](NOTICE) lists every one of them. Two are worth knowing before you reuse anything:
+
+- **`build/survey.txt` is CC BY-SA 4.0, not MIT.** The calibration corpus is largely Wikipedia text, and share-alike is contagious: a corpus derived from it inherits the same licence. It is committed anyway because reproducibility depends on it — the corpus is what decides which experts survive, so a rebuild cannot be checked against ours without the exact bytes.
+- **The saliency and plan files are derivative of Kimi K3** ([`licenses/LICENSE.Kimi-K3`](licenses/LICENSE.Kimi-K3)). Moonshot's licence permits derivative works; its Model-as-a-Service conditions bite only above $20M monthly revenue or 100M MAU. Moonshot consistently say "open weight", never "open source" — worth matching that language.
+
+No model weights are redistributed here. The plan file is a list of integers; applied to Moonshot's published weights it reproduces our build bit-for-bit, which is what [`build/verify.log`](build/verify.log) checks.
 
 **REAP cannot leak a calibration corpus.** It deletes experts, it does not train — surviving weights are bit-identical to Moonshot's originals and no gradient ever touches them. The saliency file is aggregate scores and the plan is a list of integers; neither has the bandwidth to encode source text. Every corpus source here is public and ungated, for reproducibility rather than privacy.
