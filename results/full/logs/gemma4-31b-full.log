@@ -1,0 +1,48 @@
+
+[eval] gemma4:31b :: belebele_hrv
+    25/200  acc 84.0%
+    50/200  acc 80.0%
+    75/200  acc 82.7%
+    100/200  acc 83.0%
+    125/200  acc 81.6%
+    150/200  acc 80.0%
+    175/200  acc 82.3%
+    200/200  acc 82.5%
+    -> accuracy 82.5%  parse 89.5%  n=200
+
+[eval] gemma4:31b :: belebele_eng
+    25/200  acc 84.0%
+    50/200  acc 76.0%
+    75/200  acc 80.0%
+    100/200  acc 77.0%
+    125/200  acc 77.6%
+    150/200  acc 80.7%
+    175/200  acc 80.6%
+    200/200  acc 81.5%
+    -> accuracy 81.5%  parse 84.0%  n=200
+
+[eval] gemma4:31b :: humaneval
+    10/164  pass@1 100.0%
+    20/164  pass@1 100.0%
+    30/164  pass@1 100.0%
+    40/164  pass@1 97.5%
+    50/164  pass@1 98.0%
+    60/164  pass@1 98.3%
+    70/164  pass@1 98.6%
+    80/164  pass@1 98.8%
+    90/164  pass@1 98.9%
+    100/164  pass@1 99.0%
+    110/164  pass@1 99.1%
+    120/164  pass@1 99.2%
+    130/164  pass@1 99.2%
+    140/164  pass@1 98.6%
+    150/164  pass@1 98.0%
+    160/164  pass@1 98.1%
+    -> pass@1 98.2%  n=164
+
+[eval] English-Croatian gap: -1.0 pts (eng 81.5% / hrv 82.5%)
+
+[eval] peak wired 55 GB | peak rss 56 GB | peak compressed 3 GB
+[eval] page-ins: 0.0 GB load, 4.85 GB early-inference (lazy mmap), 0.007 GB/min sustained (resident)
+
+[eval] wrote results/full/eval-gemma4-31b-2026-08-02.json  (32.1 min)

@@ -14,3 +14,9 @@
 [mlx] loaded in 40s | peak 349 GB
 
 [eval] K3-thinking-probe :: belebele_hrv
+    -> accuracy 35.0%  parse 80.0%  n=20
+
+[eval] peak wired 468 GB | peak rss 325 GB | peak compressed 3 GB
+[eval] page-ins: 57.2 GB load, 0.17 GB early-inference (lazy mmap), 0.008 GB/min sustained (resident)
+
+[eval] wrote results/full/eval-K3-thinking-probe-2026-08-01.json  (16.2 min)

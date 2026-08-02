@@ -1,0 +1,256 @@
+{
+  "label": "K3-thinking-probe",
+  "backend": "mlx:$K3_BUILD",
+  "date": "2026-08-01",
+  "seed": 20260801,
+  "decoding": "greedy (temperature 0)",
+  "tasks": {
+    "belebele_hrv": {
+      "n": 20,
+      "accuracy": 0.35,
+      "parse_rate": 0.8,
+      "mean_tok_s": 5.428135870880456,
+      "mean_thinking_chars": 1106.0,
+      "truncated_rate": 0.05,
+      "echo_rate": 0.05,
+      "items": [
+        {
+          "id": "https://en.wikibooks.org/wiki/American_Revolution/The_Battles_of_Trenton_and_Princeton#2",
+          "correct": false,
+          "parsed": true,
+          "raw": "We need answer only 1/2/3/4. Need identi",
+          "gen_tokens": 149,
+          "decode_tok_s": 5.441295848862769,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikivoyage.org/wiki/First_and_business_class_flights#1",
+          "correct": false,
+          "parsed": false,
+          "raw": "",
+          "gen_tokens": 3,
+          "decode_tok_s": 5.425022882866026,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikibooks.org/wiki/Introduction_to_Sociology/Socialization#2",
+          "correct": true,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 4,
+          "decode_tok_s": 5.404069894786752,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikinews.org/wiki/A1GP_New_Zealand_speeds_its_way_into_record_books#1",
+          "correct": false,
+          "parsed": true,
+          "raw": "2",
+          "gen_tokens": 4,
+          "decode_tok_s": 5.4460287869408655,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikivoyage.org/wiki/Culture_shock#1",
+          "correct": false,
+          "parsed": true,
+          "raw": "We need answer to user. Need parse Croat",
+          "gen_tokens": 446,
+          "decode_tok_s": 5.4263559063641535,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikinews.org/wiki/Nationalised_bank_Northern_Rock_sold_to_Virgin_Money#1",
+          "correct": false,
+          "parsed": false,
+          "raw": "2",
+          "gen_tokens": 4,
+          "decode_tok_s": 5.41481562527131,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": true
+        },
+        {
+          "id": "https://en.wikibooks.org/wiki/Cognitive_Psychology_and_Cognitive_Neuroscience/Evolutionary_Perspective_on_Social_Cognitions#1",
+          "correct": true,
+          "parsed": true,
+          "raw": "The answer is 2. Namjeru.",
+          "gen_tokens": 10,
+          "decode_tok_s": 5.434484291993346,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikivoyage.org/wiki/Travellers%27_diarrhea#1",
+          "correct": true,
+          "parsed": true,
+          "raw": "3",
+          "gen_tokens": 4,
+          "decode_tok_s": 5.429280782463944,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikivoyage.org/wiki/Round_the_world_flights#1",
+          "correct": false,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 4,
+          "decode_tok_s": 5.445459605868959,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikinews.org/wiki/Ma_Ying-jeou_wins_2008_Taiwan_presidential_election#1",
+          "correct": true,
+          "parsed": true,
+          "raw": "We need answer single digit. Need unders",
+          "gen_tokens": 78,
+          "decode_tok_s": 5.441443324668979,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikibooks.org/wiki/Wikijunior:Biology/Kingdoms/Animals#2",
+          "correct": true,
+          "parsed": true,
+          "raw": "We need answer single digit. Need identi",
+          "gen_tokens": 404,
+          "decode_tok_s": 5.439748905766216,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikivoyage.org/wiki/Buffalo-Pittsburgh_Highway#1",
+          "correct": true,
+          "parsed": true,
+          "raw": "The passage describes the route between ",
+          "gen_tokens": 212,
+          "decode_tok_s": 5.432756472380574,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikibooks.org/wiki/Wikijunior:World_Heritage_Sites/Botanic_Gardens#2",
+          "correct": false,
+          "parsed": true,
+          "raw": "We need answer. Need parse question. \"Št",
+          "gen_tokens": 74,
+          "decode_tok_s": 5.455366909740255,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikibooks.org/wiki/Coaching_Youth_Middle_Distance_Runners/Nutrition#2",
+          "correct": false,
+          "parsed": true,
+          "raw": "We need answer single digit 1/2/3/4. Nee",
+          "gen_tokens": 170,
+          "decode_tok_s": 5.4384180407360905,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikibooks.org/wiki/Wikijunior:Ancient_Civilizations/What_is_a_Civilization%3F#2",
+          "correct": false,
+          "parsed": false,
+          "raw": "",
+          "gen_tokens": 3,
+          "decode_tok_s": 5.345146005959011,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikinews.org/wiki/Nadal_beats_Raonic_to_reach_Australian_Open_semis#1",
+          "correct": false,
+          "parsed": true,
+          "raw": "We need answer correct option only. Need",
+          "gen_tokens": 763,
+          "decode_tok_s": 5.44440940772437,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikinews.org/wiki/Researchers_report_rapid_formation_of_new_bird_species_in_Gal%C3%A1pagos_islands#2",
+          "correct": false,
+          "parsed": true,
+          "raw": "We need answer correct option. Need unde",
+          "gen_tokens": 534,
+          "decode_tok_s": 5.431338929902199,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikinews.org/wiki/IEEE_approves_802.11n_standard_after_six_years#1",
+          "correct": false,
+          "parsed": false,
+          "raw": "",
+          "gen_tokens": 1024,
+          "decode_tok_s": 5.418651551190898,
+          "thinking_chars": 21796,
+          "truncated": true,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikibooks.org/wiki/Environmental_theory_and_collection_of_ideas/Environmentalism_and_survival#2",
+          "correct": false,
+          "parsed": true,
+          "raw": "We need answer one option. Need understa",
+          "gen_tokens": 808,
+          "decode_tok_s": 5.413581514617335,
+          "thinking_chars": 0,
+          "truncated": false,
+          "echoed": false
+        },
+        {
+          "id": "https://en.wikinews.org/wiki/China_promises_cut_in_carbon_dioxide_emissions#2",
+          "correct": true,
+          "parsed": true,
+          "raw": "4",
+          "gen_tokens": 4,
+          "decode_tok_s": 5.435042729505064,
+          "thinking_chars": 36,
+          "truncated": false,
+          "echoed": false
+        }
+      ],
+      "wall_s": 969.2
+    }
+  },
+  "resources": {
+    "pagein_gb_load": 57.22,
+    "pagein_gb_inference": 0.17,
+    "pagein_gb_per_min_sustained": 0.008,
+    "duration_s": 1007.4,
+    "n_samples": 201,
+    "peak_wired_gb": 468.39,
+    "peak_rss_gb": 325.12,
+    "peak_active_gb": 247.37,
+    "peak_compressed_gb": 3.26,
+    "peak_swap_mb": 23227.1,
+    "min_free_gb": 0.05,
+    "pagein_gb_total": 57.39
+  },
+  "total_wall_s": 969.2
+}

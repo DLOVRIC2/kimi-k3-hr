@@ -2,3 +2,13 @@
 === [23:02:29] END   k3-thinking-probe (exit 0)
 === [23:02:29] START k3-full
 === [23:19:06] START k3-thinking-probe
+=== [23:35:58] END   k3-thinking-probe (exit 0)
+=== [23:35:58] START k3-full
+=== [01:49:52] END   k3-full (exit 0)
+=== [01:49:55] START gpt-oss-20b-full
+=== [02:28:26] END   gpt-oss-20b-full (exit 0)
+=== [02:28:29] START gemma4-31b-full
+=== [03:00:32] END   gemma4-31b-full (exit 0)
+=== [03:00:35] START gpt-oss-120b-full
+=== [03:44:14] END   gpt-oss-120b-full (exit 0)
+=== [03:44:14] SWEEP COMPLETE

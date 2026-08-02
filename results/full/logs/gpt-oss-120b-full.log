@@ -1,0 +1,48 @@
+
+[eval] gpt-oss:120b :: belebele_hrv
+    25/200  acc 88.0%
+    50/200  acc 78.0%
+    75/200  acc 78.7%
+    100/200  acc 79.0%
+    125/200  acc 78.4%
+    150/200  acc 77.3%
+    175/200  acc 80.0%
+    200/200  acc 81.0%
+    -> accuracy 81.0%  parse 89.0%  n=200
+
+[eval] gpt-oss:120b :: belebele_eng
+    25/200  acc 84.0%
+    50/200  acc 78.0%
+    75/200  acc 81.3%
+    100/200  acc 79.0%
+    125/200  acc 79.2%
+    150/200  acc 81.3%
+    175/200  acc 81.1%
+    200/200  acc 82.0%
+    -> accuracy 82.0%  parse 84.5%  n=200
+
+[eval] gpt-oss:120b :: humaneval
+    10/164  pass@1 90.0%
+    20/164  pass@1 90.0%
+    30/164  pass@1 86.7%
+    40/164  pass@1 85.0%
+    50/164  pass@1 86.0%
+    60/164  pass@1 86.7%
+    70/164  pass@1 88.6%
+    80/164  pass@1 90.0%
+    90/164  pass@1 91.1%
+    100/164  pass@1 92.0%
+    110/164  pass@1 90.9%
+    120/164  pass@1 90.8%
+    130/164  pass@1 91.5%
+    140/164  pass@1 91.4%
+    150/164  pass@1 91.3%
+    160/164  pass@1 91.9%
+    -> pass@1 92.1%  n=164
+
+[eval] English-Croatian gap: +1.0 pts (eng 82.0% / hrv 81.0%)
+
+[eval] peak wired 78 GB | peak rss 74 GB | peak compressed 3 GB
+[eval] page-ins: 0.0 GB load, 15.60 GB early-inference (lazy mmap), 0.007 GB/min sustained (resident)
+
+[eval] wrote results/full/eval-gpt-oss-120b-2026-08-02.json  (43.6 min)

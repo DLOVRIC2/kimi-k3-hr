@@ -5,3 +5,54 @@
 [eval] K3-REAP80-hr-code :: belebele_hrv
 $UV_HOME/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/multiprocessing/resource_tracker.py:279: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
   warnings.warn('resource_tracker: There appear to be %d '
+[mem] wired limit 515 GB (Metal recommendation, same value mlx-lm uses)
+[mlx] loading $K3_BUILD ...
+[mlx] loaded in 48s | peak 349 GB
+
+[eval] K3-REAP80-hr-code :: belebele_hrv
+    25/200  acc 52.0%
+    50/200  acc 36.0%
+    75/200  acc 38.7%
+    100/200  acc 39.0%
+    125/200  acc 41.6%
+    150/200  acc 38.7%
+    175/200  acc 40.0%
+    200/200  acc 40.5%
+    -> accuracy 40.5%  parse 78.5%  n=200
+
+[eval] K3-REAP80-hr-code :: belebele_eng
+    25/200  acc 24.0%
+    50/200  acc 28.0%
+    75/200  acc 24.0%
+    100/200  acc 22.0%
+    125/200  acc 24.0%
+    150/200  acc 24.0%
+    175/200  acc 24.0%
+    200/200  acc 24.5%
+    -> accuracy 24.5%  parse 61.5%  n=200
+
+[eval] K3-REAP80-hr-code :: humaneval
+    10/164  pass@1 30.0%
+    20/164  pass@1 25.0%
+    30/164  pass@1 30.0%
+    40/164  pass@1 27.5%
+    50/164  pass@1 34.0%
+    60/164  pass@1 33.3%
+    70/164  pass@1 34.3%
+    80/164  pass@1 31.2%
+    90/164  pass@1 28.9%
+    100/164  pass@1 27.0%
+    110/164  pass@1 26.4%
+    120/164  pass@1 26.7%
+    130/164  pass@1 25.4%
+    140/164  pass@1 23.6%
+    150/164  pass@1 24.0%
+    160/164  pass@1 25.0%
+    -> pass@1 25.0%  n=164
+
+[eval] English-Croatian gap: -16.0 pts (eng 24.5% / hrv 40.5%)
+
+[eval] peak wired 469 GB | peak rss 325 GB | peak compressed 3 GB
+[eval] page-ins: 72.7 GB load, 3.32 GB early-inference (lazy mmap), 0.040 GB/min sustained (resident)
+
+[eval] wrote results/full/eval-K3-REAP80-hr-code-2026-08-01.json  (133.0 min)
