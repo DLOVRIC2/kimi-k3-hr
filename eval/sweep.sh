@@ -15,8 +15,13 @@
 set -u
 cd "$(dirname "$0")/.." || exit 1
 
-SRC=$K3_SRC
-K3=$K3_BUILD
+# Paths come from the environment so this runs on any machine. Set them in
+# your shell or a .env; the defaults assume everything sits under ~/models.
+SRC=${K3_SRC:-$HOME/models/Kimi-K3-src}
+K3=${K3_BUILD:-$HOME/models/K3-REAP80-hr-code-q8}
+for d in "$SRC" "$K3"; do
+  [ -d "$d" ] || { echo "missing: $d (set K3_SRC / K3_BUILD)" >&2; exit 1; }
+done
 OUT=results/full
 LOGS=results/full/logs
 mkdir -p "$LOGS"

@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import random
 import sys
@@ -37,8 +38,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 CKPT = ROOT / "results" / "full" / "checkpoints"
 K3_LABEL = "K3-REAP80-hr-code"
 
-SRC = pathlib.Path.home() / "models/Kimi-K3-src"
-K3_PATH = pathlib.Path.home() / "models/K3-REAP80-hr-code-q8"
+SRC = pathlib.Path(os.environ.get("K3_SRC", pathlib.Path.home() / "models/Kimi-K3-src"))
+K3_PATH = pathlib.Path(os.environ.get(
+    "K3_BUILD", pathlib.Path.home() / "models/K3-REAP80-hr-code-q8"))
+TOOLCHAIN = pathlib.Path(os.environ.get("K3_MLX", pathlib.Path.home() / "kimi-k3-mlx"))
 
 # How many of each outcome to capture. Small on purpose: at 5.4 tok/s a coding
 # item costs about a minute, and the point is illustration, not measurement.
@@ -182,7 +185,7 @@ def main() -> None:
 
     if not a.skip_k3:
         k3 = B.MLXBackend(str(K3_PATH), src=str(SRC),
-                          toolchain=str(pathlib.Path.home() / "kimi-k3-mlx"),
+                          toolchain=str(TOOLCHAIN),
                           label=K3_LABEL)
         run_model(k3, items, K3_LABEL)
 

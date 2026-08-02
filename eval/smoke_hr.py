@@ -44,7 +44,9 @@ def main() -> None:
     ap.add_argument("--path", required=True)
     ap.add_argument("--src", required=True)
     ap.add_argument("--max-tokens", type=int, default=100)
-    ap.add_argument("--toolchain", default=str(pathlib.Path.home() / "kimi-k3-mlx"))
+    ap.add_argument("--toolchain", default=str(pathlib.Path(
+        os.environ.get("K3_MLX", pathlib.Path.home() / "kimi-k3-mlx"))),
+        help="checkout of PipeNetwork/kimi-k3-mlx; overrides $K3_MLX")
     ap.add_argument("--raw", dest="chat", action="store_false",
                     help="skip the chat template (base-model style completion)")
     ap.add_argument("--thinking", action="store_true",

@@ -118,7 +118,8 @@ K3 vs gpt-oss:20b    K3 more Croatian-favouring on 55 items, less on 19   p 3.38
 
 Read alongside Finding 1, these are the same result. Pruning damages response initiation
 rather than comprehension, and **the calibration corpus determines which languages
-retain the ability to initiate.** Our corpus was 22% Croatian and 16% English, and
+retain the ability to initiate.** Our calibration corpus was 24.6% Croatian against
+9.9% English (16.2% code), and
 Croatian is where the model still answers.
 
 What this does *not* establish is that the Croatian data caused it, rather than pruning
@@ -210,7 +211,7 @@ bypasses the chat stack entirely and buckets by source language — but the cali
 corpus was sized to what calibration consumed, leaving 844 held-out tokens against the
 65,536 required (`LOG.md` #29). It needs a fresh corpus first.
 
-**No unpruned baseline exists anywhere.** The smallest full K3 tier is 883 GB against 512
+**No unpruned baseline exists anywhere.** The smallest full K3 tier is ~870 GB against 512
 GB of unified memory, so no unpruned tier has ever produced a token on this hardware —
 not here, and not in the toolchain that published these builds. "How much did pruning
 cost" is not directly answerable. The nearest control is the published

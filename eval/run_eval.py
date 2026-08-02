@@ -31,7 +31,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", required=True, help="ollama:<model> or mlx:<path>")
     ap.add_argument("--src", default=None, help="Kimi-K3-src (mlx backend only)")
-    ap.add_argument("--toolchain", default=str(pathlib.Path.home() / "kimi-k3-mlx"))
+    ap.add_argument("--toolchain", default=str(pathlib.Path(
+        os.environ.get("K3_MLX", pathlib.Path.home() / "kimi-k3-mlx"))),
+        help="checkout of PipeNetwork/kimi-k3-mlx; overrides $K3_MLX")
     ap.add_argument("--label", default=None)
     ap.add_argument("--tasks", default="belebele_hrv,belebele_eng,humaneval")
     ap.add_argument("--limit-belebele", type=int, default=200)

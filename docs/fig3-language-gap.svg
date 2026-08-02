@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" width="760" height="380" role="img" aria-label="Croatian minus English by response rate and accuracy">
+<title>Croatian minus English by response rate and accuracy</title>
+<text x="20.0" y="26.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" fill="#7d8590" text-anchor="start" font-weight="600" opacity="1.0">Croatian minus English, on identical passages</text>
+<text x="20.0" y="45.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="start" font-weight="400" opacity="0.8">K3 answers far more in Croatian. It is not more accurate in it.</text>
+<rect x="512.0" y="18.0" width="10.0" height="10.0" fill="#f85149" opacity="1.0" rx="2"/>
+<text x="527.0" y="27.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="start" font-weight="400" opacity="0.85">response rate</text>
+<rect x="512.0" y="38.0" width="10.0" height="10.0" fill="#7d8590" opacity="0.45" rx="2"/>
+<text x="527.0" y="47.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="start" font-weight="400" opacity="0.85">accuracy</text>
+<line x1="390.0" y1="68.0" x2="390.0" y2="340.0" stroke="#7d8590" stroke-width="1" opacity="0.4"/>
+<text x="390.0" y="366.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="middle" font-weight="400" opacity="0.7">0</text>
+<text x="300.0" y="366.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10" fill="#7d8590" text-anchor="middle" font-weight="400" opacity="0.6">more English</text>
+<text x="480.0" y="366.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10" fill="#7d8590" text-anchor="middle" font-weight="400" opacity="0.6">more Croatian</text>
+<text x="136.0" y="110.5" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#f85149" text-anchor="end" font-weight="600" opacity="1.0">K3-REAP80-hr-code</text>
+<rect x="390.0" y="84.0" width="190.9" height="19.5" fill="#f85149" opacity="1.0" rx="2"/>
+<text x="588.9" y="102.5" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="start" font-weight="600" opacity="0.95">+17.5</text>
+<rect x="390.0" y="109.5" width="76.4" height="19.5" fill="#7d8590" opacity="0.45" rx="2"/>
+<text x="474.4" y="128.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="start" font-weight="600" opacity="0.95">+7.0</text>
+<text x="136.0" y="175.5" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#58a6ff" text-anchor="end" font-weight="600" opacity="1.0">gpt-oss:120b</text>
+<rect x="390.0" y="149.0" width="0.0" height="19.5" fill="#f85149" opacity="1.0" rx="2"/>
+<text x="398.0" y="167.5" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="start" font-weight="600" opacity="0.95">+0.0</text>
+<rect x="335.5" y="174.5" width="54.5" height="19.5" fill="#7d8590" opacity="0.45" rx="2"/>
+<text x="327.5" y="193.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="end" font-weight="600" opacity="0.95">-5.0</text>
+<text x="136.0" y="240.5" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#3fb950" text-anchor="end" font-weight="600" opacity="1.0">gemma4:31b</text>
+<rect x="390.0" y="214.0" width="0.0" height="19.5" fill="#f85149" opacity="1.0" rx="2"/>
+<text x="398.0" y="232.5" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="start" font-weight="600" opacity="0.95">+0.0</text>
+<rect x="362.7" y="239.5" width="27.3" height="19.5" fill="#7d8590" opacity="0.45" rx="2"/>
+<text x="354.7" y="258.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="end" font-weight="600" opacity="0.95">-2.5</text>
+<text x="136.0" y="305.5" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#d29922" text-anchor="end" font-weight="600" opacity="1.0">gpt-oss:20b</text>
+<rect x="373.6" y="279.0" width="16.4" height="19.5" fill="#f85149" opacity="1.0" rx="2"/>
+<text x="365.6" y="297.5" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="end" font-weight="600" opacity="0.95">-1.5</text>
+<rect x="330.0" y="304.5" width="60.0" height="19.5" fill="#7d8590" opacity="0.45" rx="2"/>
+<text x="322.0" y="323.0" font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#7d8590" text-anchor="end" font-weight="600" opacity="0.95">-5.5</text>
+</svg>

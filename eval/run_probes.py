@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import sys
 import time
@@ -108,7 +109,9 @@ def generate(model, enc, prompt: str, max_tokens: int, mx) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser(description="Run probe set against a K3 build")
     ap.add_argument("--model", required=True, help="converted build directory")
-    ap.add_argument("--toolchain", default=str(pathlib.Path.home() / "kimi-k3-mlx"))
+    ap.add_argument("--toolchain", default=str(pathlib.Path(
+        os.environ.get("K3_MLX", pathlib.Path.home() / "kimi-k3-mlx"))),
+        help="checkout of PipeNetwork/kimi-k3-mlx; overrides $K3_MLX")
     ap.add_argument("--src", default=None, help="Kimi-K3-src, for tiktoken.model")
     ap.add_argument("--probes", default=None, help="defaults to eval/probes.yaml beside this script")
     ap.add_argument("--out-dir", default=None, help="defaults to ../results")
