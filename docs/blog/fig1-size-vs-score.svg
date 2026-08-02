@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" width="760" height="420" role="img" aria-label="Croatian accuracy against model size">
+<title>Croatian accuracy against model size</title>
+<text x="70.0" y="24.0" class="s-lane" text-anchor="start" fill="var(--spec-muted)">Croatian comprehension against model size</text>
+<line x1="70.0" y1="356.0" x2="730.0" y2="356.0" stroke="var(--spec-border)" stroke-width="1" opacity="0.15"/>
+<text x="60.0" y="360.0" class="s-edge" text-anchor="end" fill="var(--spec-muted)" opacity="0.75">0%</text>
+<line x1="70.0" y1="278.5" x2="730.0" y2="278.5" stroke="var(--spec-border)" stroke-width="1" opacity="0.15"/>
+<text x="60.0" y="282.5" class="s-edge" text-anchor="end" fill="var(--spec-muted)" opacity="0.75">25%</text>
+<line x1="70.0" y1="201.0" x2="730.0" y2="201.0" stroke="var(--spec-border)" stroke-width="1" opacity="0.15"/>
+<text x="60.0" y="205.0" class="s-edge" text-anchor="end" fill="var(--spec-muted)" opacity="0.75">50%</text>
+<line x1="70.0" y1="123.5" x2="730.0" y2="123.5" stroke="var(--spec-border)" stroke-width="1" opacity="0.15"/>
+<text x="60.0" y="127.5" class="s-edge" text-anchor="end" fill="var(--spec-muted)" opacity="0.75">75%</text>
+<line x1="70.0" y1="46.0" x2="730.0" y2="46.0" stroke="var(--spec-border)" stroke-width="1" opacity="0.15"/>
+<text x="60.0" y="50.0" class="s-edge" text-anchor="end" fill="var(--spec-muted)" opacity="0.75">100%</text>
+<line x1="70.0" y1="278.5" x2="730.0" y2="278.5" stroke="var(--spec-muted)" stroke-width="1" opacity="0.45" stroke-dasharray="4 4"/>
+<text x="730.0" y="271.5" class="s-edge" text-anchor="end" fill="var(--spec-muted)" opacity="0.7">chance</text>
+<text x="70.0" y="376.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">10</text>
+<text x="224.6" y="376.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">25</text>
+<text x="341.5" y="376.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">50</text>
+<text x="458.5" y="376.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">100</text>
+<text x="575.4" y="376.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">200</text>
+<text x="692.4" y="376.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">400</text>
+<text x="400.0" y="406.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.8">weights on disk (GB, log scale)</text>
+<circle cx="657.8" cy="216.5" r="7" fill="var(--spec-red)"/>
+<text x="657.8" y="242.5" class="s-titleS" text-anchor="middle" fill="var(--spec-red)">K3-REAP80-hr-code</text>
+<text x="657.8" y="256.5" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.85">45.0%  ·  326 GB</text>
+<circle cx="385.8" cy="73.9" r="7" fill="var(--spec-teal)"/>
+<text x="385.8" y="57.9" class="s-titleS" text-anchor="middle" fill="var(--spec-teal)">gpt-oss:120b</text>
+<text x="385.8" y="43.9" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.85">91.0%  ·  65 GB</text>
+<circle cx="178.3" cy="67.7" r="7" fill="var(--spec-green)"/>
+<text x="174.3" y="51.7" class="s-titleS" text-anchor="start" fill="var(--spec-green)">gemma4:31b</text>
+<text x="174.3" y="37.7" class="s-edge" text-anchor="start" fill="var(--spec-muted)" opacity="0.85">93.0%  ·  19 GB</text>
+<circle cx="114.3" cy="80.1" r="7" fill="var(--spec-amber)"/>
+<text x="114.3" y="64.1" class="s-titleS" text-anchor="middle" fill="var(--spec-amber)">gpt-oss:20b</text>
+<text x="114.3" y="50.1" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.85">89.0%  ·  13 GB</text>
+<line x1="178.3" y1="67.7" x2="657.8" y2="216.5" stroke="var(--spec-muted)" stroke-width="1.5" opacity="0.35" stroke-dasharray="5 5"/>
+<text x="418.1" y="134.1" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.95">17x the disk, 48 points worse</text>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 270" width="760" height="270" role="img" aria-label="Effect of the two corrections on the headline gap">
+<title>Effect of the two corrections on the headline gap</title>
+<text x="20.0" y="24.0" class="s-lane" text-anchor="start" fill="var(--spec-muted)">The headline gap, as two errors were removed</text>
+<text x="20.0" y="42.0" class="s-sub" text-anchor="start" fill="var(--spec-muted)" opacity="0.8">K3 Croatian minus English accuracy, same run, three analyses</text>
+<line x1="44.0" y1="108.0" x2="716.0" y2="108.0" stroke="var(--spec-muted)" stroke-width="1" opacity="0.35"/>
+<text x="38.0" y="112.0" class="s-edge" text-anchor="end" fill="var(--spec-muted)" opacity="0.7">0</text>
+<rect x="120.0" y="108.0" width="72.0" height="81.8" fill="var(--spec-red)" opacity="1.0" rx="2"/>
+<text x="156.0" y="96.0" class="s-num" text-anchor="middle" fill="var(--spec-muted)">-16.0</text>
+<text x="156.0" y="214.0" class="s-titleS" text-anchor="middle" fill="var(--spec-muted)">as first published</text>
+<text x="156.0" y="230.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">unpaired items, loose echo rule</text>
+<text x="268.0" y="160.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.45">→</text>
+<rect x="344.0" y="108.0" width="72.0" height="74.1" fill="var(--spec-red)" opacity="1.0" rx="2"/>
+<text x="380.0" y="96.0" class="s-num" text-anchor="middle" fill="var(--spec-muted)">-14.5</text>
+<text x="380.0" y="214.0" class="s-titleS" text-anchor="middle" fill="var(--spec-muted)">echo rule fixed</text>
+<text x="380.0" y="230.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">still unpaired</text>
+<text x="492.0" y="160.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.45">→</text>
+<rect x="568.0" y="108.0" width="72.0" height="35.8" fill="var(--spec-muted)" opacity="0.55" rx="2"/>
+<text x="604.0" y="96.0" class="s-num" text-anchor="middle" fill="var(--spec-muted)">-7.0</text>
+<text x="604.0" y="214.0" class="s-titleS" text-anchor="middle" fill="var(--spec-muted)">and items paired</text>
+<text x="604.0" y="230.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.75">the actual result</text>
+<text x="380.0" y="256.0" class="s-edge" text-anchor="middle" fill="var(--spec-muted)" opacity="0.9">significance: p=0.00064 ***  →  p=0.13 n.s.</text>
+</svg>
