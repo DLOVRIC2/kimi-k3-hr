@@ -707,13 +707,55 @@ well past z=30. The corrected values reproduce the originals exactly (6.06e-18, 
 author does not know what a p-value is. Catastrophic cancellation shows up wherever you
 subtract a nearly-equal pair; the numerically stable form usually exists already.
 
+### 28. The echo detector was throwing away correct answers
+
+**Symptom:** while checking the captured example outputs, two items classified as
+"echoed the passage" turned out to have generated a **single token**. One of them was
+`'2'`, and the correct answer was 2.
+**Cause:** `_is_echo` tested `head[:40] in prompt[:200]` with no minimum length. The
+expected response to a Belebele item is one digit, and most passages contain that digit
+somewhere in their first 200 characters. So a bare correct answer matched the
+containment test, was labelled an echo, and — because the scorer deliberately refuses to
+extract a digit from an echo, so that a restated passage cannot score by luck — was
+discarded as unparsed and marked wrong.
+**Scale:** 140 items across the paired sweep, 253 including the original English run.
+For **all three comparators it was 100% of their reported echoes** — every single one a
+bare correct answer. Those models never echoed a passage even once; the ~10% echo rate
+attributed to them was entirely manufactured by the detector.
+**Fix:** a 20-character floor before the containment test. An echo is a restatement and
+cannot be shorter than a few words. `startswith("Passage:")` still fires at any length.
+**Rescoring cost nothing.** The checkpoint stores `raw` as exactly `text.strip()[:40]`
+and the rule reads `head[:40]`, so the stored prefix is precisely the rule's input: the
+decision reproduces exactly rather than approximately, and 230 correct answers were
+recovered from disk without loading a model. That was luck rather than design — had the
+truncation been 30 characters, or the rule looked at 60, none of this would have been
+recoverable and the whole sweep would have needed rerunning. **Store the exact input
+your classifier consumes, not a convenient prefix of it.**
+**Direction:** the correction raised the comparators 8–11 points and K3 only 3–6, so it
+*widened* the gap the report is about. A bug whose fix makes your own result look worse
+is the easy case; the hard case is #26, where the first error happened to favour the
+story being told.
+**Lesson:** a heuristic classifier that can veto a valid parse needs a bound on what it
+is allowed to match. And the bug was invisible in every aggregate — echo rates of ~10%
+looked entirely plausible for all four models. It only surfaced because something
+unrelated (capturing example outputs for a blog post) put a single raw generation next
+to its own classification. **Read your data at the level of individual records, not just
+distributions.**
+
 ### Bugs found before the writeup vs during the run
 
-Entries #25–#27 were all found by writing a script to reproduce numbers that already
-existed. Two of the three were in the *reporting layer*, not the measurement layer —
-the experiment was fine, the transcription was not. That layer had no tests, no asserts
-and no second reader, which made it the least-scrutinised code in the project and the
-only part whose output anyone would actually read.
+Entries #25–#28 were all found *after* the sweep finished, by building tooling to
+reproduce and illustrate numbers that already existed. Not one required rerunning a
+model. Three were in the *reporting* layer rather than the measurement layer — the
+experiment was fine, the transcription was not — and that layer had no tests, no
+asserts and no second reader, which made it the least-scrutinised code in the project
+and the only part whose output anyone would actually read.
+
+#28 is the exception and the more troubling one: a genuine scoring bug, in code that had
+been running since the pilot, invisible in every aggregate for the whole project. It
+surfaced only because capturing example generations for a writeup happened to place one
+raw response beside its own classification. **The work done to explain a result is not
+separate from the work of getting it right.**
 
 ---
 
@@ -723,13 +765,21 @@ only part whose output anyone would actually read.
 
 | | |
 |---|---|
-| `LOG.md` | this file — 24 entries, the build narrative |
+| `LOG.md` | this file — 28 entries, the build narrative |
 | `RESULTS.md` | the full sweep, findings, significance tests, limitations |
 | `README.md` | thesis, arms, setup, licence |
-| `results/full/` | 13 per-item checkpoints (2,276 items), 5 memtraces, 5 result JSONs, arm logs |
+| `results/full/` | the sweep as run — 13 per-item checkpoints (2,276 items), 5 memtraces, 5 result JSONs, arm logs |
+| `results/paired/` | English re-scored on the Croatian item set (#23), 53 min |
+| `results/rescored/` | corrected echo rule applied to both (#28), no GPU time |
+| `results/examples/` | full generations for 14 stratified items, K3 and gemma4:31b on identical prompts |
 | `results/pilot/` | the n=10 pilot that caught three harness bugs |
 | `results/invalid/` | quarantined runs — the capped-budget K3 arm and the pre-channel-fix thinking probe, kept because they are evidence for #20 and #21 |
 | `results/overlap-*.txt`, `retention-*.txt` | the expert-overlap matrix and the reference-mix counterfactual |
+| `eval/analysis.py` | regenerates every table in RESULTS.md from the per-item records |
+
+Three generations of the data are kept side by side rather than overwritten. Each
+correction is a result in its own right, and the only way to show what unmatched
+sampling or a loose classifier actually costs is to keep the before.
 
 **Not in this repo:** `$MODELS/` holds the conceptual layer
 (`docs/01-concepts.md`, `02-math.md`, `03-protocol.md`, `04-choosing-experts.md`,
@@ -737,9 +787,10 @@ only part whose output anyone would actually read.
 and the 326 GB build. It has a git dir with **zero commits and no remote** — the build
 narrative is safe here, but that teaching material is not backed up anywhere.
 
-**Open work** is enumerated as limitations 1–5 in RESULTS.md: paired resampling, the
-control arm, the `hr-heavy`/`hr-only` ablations, thinking mode at proper n, and variance
-across prune plans.
+**Open work** is enumerated as limitations 1–6 in RESULTS.md. Paired resampling is now
+done; the control arm is the top remaining item, followed by the `hr-heavy`/`hr-only`
+ablations, thinking mode at proper n, variance across prune plans, and a logit probe to
+explain the response-initiation failure rather than merely measure it.
 
 ---
 
@@ -751,9 +802,10 @@ we invoked it. The rest stand, and are enumerated with cost estimates as limitat
 in `RESULTS.md`.
 
 1. ~~Thinking-mode confound~~ — **resolved**, see Phase 8.
-2. **The language comparison is unpaired** (#23). Belebele's parallel design was never
-   exploited; only 48 of 200 items overlap. The gap survives an unpaired test
-   (p=0.00064) but a matched-subset rerun is strictly better and costs ~1 h.
+2. ~~The language comparison is unpaired~~ (#23) — **resolved**, and it changed the
+   answer. The matched rerun cost 53 minutes and cut the Croatian accuracy advantage
+   from −16.0 to −7.0, at p=0.13. What survived is a compliance effect, not a
+   comprehension one. See Finding 2 in RESULTS.md.
 3. **No control arm.** `reap_subset --keep-sources code,en,zh,de,ru,fr` reproduces the
    reference mix from the *same* calibration run. Without it, Finding 2 shows this build
    favours Croatian but cannot attribute that to the corpus rather than to pruning
@@ -783,28 +835,33 @@ Ranked by how much time they would have saved.
    and no second reader, which made it the least-scrutinised code in the project and the
    only part anyone would actually read. Write the analysis script *before* the writeup;
    it audits you.
-5. **An average of rates is not a rate** (#26). Aggregate the numerator and denominator
+5. **Read individual records, not just distributions** (#28). A scoring bug that
+   discarded correct answers survived the entire project because a ~10% echo rate looked
+   plausible for all four models. It died the moment one raw generation was placed next
+   to its own classification. Aggregates cannot show you a misclassification whose rate
+   is believable.
+6. **An average of rates is not a rate** (#26). Aggregate the numerator and denominator
    separately. Averaging per-item tok/s counted 83 silent items as "zero tokens per
    second" and weighted one-token generations equally with 200-token ones. The correction
    moved two models in opposite directions — and note which direction the *error* had
    favoured.
-6. **Assert the properties you depend on, in code.** The manifest contract (#3), the
+7. **Assert the properties you depend on, in code.** The manifest contract (#3), the
    checkpoint key (#18) and Belebele's parallelism (#23) were all documented in comments
    and all silently violated. Two now refuse to run; the third should.
-7. **Quantisation profiles leave things untouched.** In a bandwidth-bound regime the
+8. **Quantisation profiles leave things untouched.** In a bandwidth-bound regime the
    *non*-expert weights dominate, because they are read every token regardless of
    routing. One flag: 4.5×.
-8. **Check a suspicious number against a prior run before interpreting it** (#24). That
+9. **Check a suspicious number against a prior run before interpreting it** (#24). That
    reflex is the only thing that separated "K3 cannot code" from "K3 codes at 51% and is
    silent half the time."
-9. **Calibrate once, subset many.** Separate calibration runs confound run-to-run
+10. **Calibrate once, subset many.** Separate calibration runs confound run-to-run
    variance with the effect being measured.
-10. **When a consumer reads only a prefix, validate the prefix**, not the whole file.
-11. **Cumulative counters cannot diagnose pathology.** Use a rate over a tail window.
-12. **Pilot before committing hours — but do not trust a pilot to find tail failures.**
+11. **When a consumer reads only a prefix, validate the prefix**, not the whole file.
+12. **Cumulative counters cannot diagnose pathology.** Use a rate over a tail window.
+13. **Pilot before committing hours — but do not trust a pilot to find tail failures.**
     n=10 caught three harness bugs in twenty minutes (#12, #13, #14) and completely
     missed two others (#19, #24) because heavy-tailed failures need scale to appear.
-13. **A metric that cannot report bad news is worse than no metric** (#22). K3's
+14. **A metric that cannot report bad news is worse than no metric** (#22). K3's
     truncation rate read 0% because the field was never set.
-14. **Check the whole machine before blaming the job you are watching** — the memory
+15. **Check the whole machine before blaming the job you are watching** — the memory
     exhaustion was a Docker VM idle for twelve days, not the calibration.

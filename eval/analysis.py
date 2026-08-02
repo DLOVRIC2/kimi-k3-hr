@@ -28,6 +28,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 FULL = ROOT / "results" / "full"
 CKPT = FULL / "checkpoints"
 PAIRED = ROOT / "results" / "paired" / "checkpoints"
+RESCORED = ROOT / "results" / "rescored" / "checkpoints"
 
 # Read English from the paired rerun when it exists.
 #
@@ -69,13 +70,21 @@ RESULT_JSON = {
 # ------------------------------------------------------------------ loading
 
 def load_items(model: str, task: str, paired: bool | None = None) -> list[dict]:
+    """Most-corrected records available for a model/task.
+
+    Precedence: rescored (corrected echo rule) > paired (matched item sets) >
+    original. HumanEval has no echo detection and no language pairing, so it
+    falls through to the original in both cases.
+    """
     paired = USE_PAIRED if paired is None else paired
-    p = PAIRED / f"{model}-{task}.jsonl" if paired else CKPT / f"{model}-{task}.jsonl"
-    if not p.exists():
-        p = CKPT / f"{model}-{task}.jsonl"   # humaneval is unaffected by pairing
-    if not p.exists():
-        return []
-    return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+    candidates = [RESCORED / f"{model}-{task}.jsonl"] if paired else []
+    if paired:
+        candidates.append(PAIRED / f"{model}-{task}.jsonl")
+    candidates.append(CKPT / f"{model}-{task}.jsonl")
+    for p in candidates:
+        if p.exists():
+            return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+    return []
 
 
 def paired_items(model: str) -> tuple[list[str], dict, dict]:
@@ -341,26 +350,49 @@ def t_unpaired_contrast() -> str:
     demonstration of what unmatched sampling costs, using real data rather than
     a hypothetical.
     """
-    out = ["## What the unpaired sampling reported", "",
-           "The first sweep drew 200 items per language with the same seed, which selects",
-           "DIFFERENT passages in each language config -- only 48 overlapped. Re-scoring",
-           "English on the Croatian item set moves every model, and not in one direction:",
+    out = ["## What the two corrections cost", "",
+           "Two independent errors sat between the first published table and this one.",
+           "Isolating them matters: quoting an old-rule unpaired number against a",
+           "new-rule paired one would attribute the whole shift to whichever correction",
+           "was being discussed.", "",
+           "### Correction 1 -- unmatched item sets",
            "",
-           "| model | gap, unpaired (n=48 shared) | gap, paired (n=200) | shift |",
+           "Both columns use the corrected echo rule; only the item set differs. The",
+           "original sweep drew 200 items per language with the same seed, which selects",
+           "DIFFERENT passages in each language config -- 48 overlapped.", "",
+           "| model | gap, unpaired items | gap, paired items | shift |",
            "|---|---|---|---|"]
     for m in MODELS:
-        h_old = {r["id"]: r for r in load_items(m, "belebele_hrv", paired=False)}
-        e_old = {r["id"]: r for r in load_items(m, "belebele_eng", paired=False)}
-        old_gap = (sum(r["correct"] for r in e_old.values()) / len(e_old)
-                   - sum(r["correct"] for r in h_old.values()) / len(h_old)) * 100
-        ids, hrv, eng = paired_items(m)
-        new_gap = (sum(eng[i]["correct"] for i in ids)
-                   - sum(hrv[i]["correct"] for i in ids)) / len(ids) * 100
+        hrv = {r["id"]: r for r in load_items(m, "belebele_hrv")}
+        eu = {r["id"]: r for r in load_items(m, "belebele_eng_unpaired")}
+        old_gap = (sum(r["correct"] for r in eu.values()) / len(eu)
+                   - sum(r["correct"] for r in hrv.values()) / len(hrv)) * 100
+        ids, h2, e2 = paired_items(m)
+        new_gap = (sum(e2[i]["correct"] for i in ids)
+                   - sum(h2[i]["correct"] for i in ids)) / len(ids) * 100
         out.append(f"| {m} | {old_gap:+.1f} | {new_gap:+.1f} | {new_gap-old_gap:+.1f} |")
-    out += ["", "The English item set drawn by the original sweep was harder for every model.",
-            "That inflated K3's apparent Croatian advantage and simultaneously masked the",
-            "comparators' real English advantage -- an error in both directions at once,",
-            "which is what unmatched sampling does."]
+
+    out += ["", "The English items the original sweep drew were harder for every model, so",
+            "this inflated K3's apparent Croatian advantage and masked the comparators'",
+            "real English advantage at the same time.", "",
+            "### Correction 2 -- the echo rule had no minimum length", "",
+            "Same items, same responses, different classification. A bare `2` was read as",
+            "a restatement of the passage whenever `2` occurred in its first 200",
+            "characters, then scored wrong.", "",
+            "| model | Croatian, old rule | corrected | English, old rule | corrected |",
+            "|---|---|---|---|---|"]
+    for m in MODELS:
+        oh = load_items(m, "belebele_hrv", paired=False)
+        oe = [r for r in load_items(m, "belebele_eng", paired=False)]
+        nh = {r["id"]: r for r in load_items(m, "belebele_hrv")}
+        ne = {r["id"]: r for r in load_items(m, "belebele_eng_unpaired")}
+        f = lambda rs: sum(r["correct"] for r in rs) / len(rs)
+        out.append(f"| {m} | {f(oh):.1%} | {f(list(nh.values())):.1%} | "
+                   f"{f(oe):.1%} | {f(list(ne.values())):.1%} |")
+    out += ["", "It suppressed accuracy for every model, and it manufactured an echo rate",
+            "for three models that never echoed once -- their reported echoes were 100%",
+            "false positives. Correcting it raises the comparators by 8-11 points and K3",
+            "by 3-5, so it widens the gap the report is about rather than narrowing it."]
     return "\n".join(out)
 
 

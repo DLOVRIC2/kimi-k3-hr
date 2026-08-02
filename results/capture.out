@@ -1,0 +1,33 @@
+[capture] 14 items selected
+[mem] wired limit 515 GB (Metal recommendation, same value mlx-lm uses)
+[mlx] loading $K3_BUILD ...
+[mlx] loaded in 49s | peak 349 GB
+  [1/14] K3-REAP80-hr-code humaneval silent HumanEval/35
+  [2/14] K3-REAP80-hr-code humaneval silent HumanEval/145
+  [3/14] K3-REAP80-hr-code humaneval silent HumanEval/102
+  [4/14] K3-REAP80-hr-code humaneval passed HumanEval/159
+  [5/14] K3-REAP80-hr-code humaneval passed HumanEval/105
+  [6/14] K3-REAP80-hr-code belebele_hrv echoed https://en.wikivoyage.org/wiki/Tornado_safety#2
+  [7/14] K3-REAP80-hr-code belebele_hrv echoed https://en.wikivoyage.org/wiki/Travel_advisories#1
+  [8/14] K3-REAP80-hr-code belebele_hrv echoed https://en.wikibooks.org/wiki/Wikijunior:Big_Book_
+  [9/14] K3-REAP80-hr-code belebele_hrv correct https://en.wikinews.org/wiki/Spanish_football:_Sev
+  [10/14] K3-REAP80-hr-code belebele_hrv correct https://en.wikinews.org/wiki/Leak_suggests_John_Ke
+  [11/14] K3-REAP80-hr-code belebele_hrv wrong https://en.wikivoyage.org/wiki/First_and_business_
+  [12/14] K3-REAP80-hr-code belebele_hrv wrong https://en.wikibooks.org/wiki/Coaching_Youth_Middl
+  [13/14] K3-REAP80-hr-code belebele_eng echoed https://en.wikibooks.org/wiki/Cognitive_Psychology
+  [14/14] K3-REAP80-hr-code belebele_eng echoed https://en.wikibooks.org/wiki/Wikijunior:Languages
+  [1/14] gemma4:31b humaneval silent HumanEval/35
+  [2/14] gemma4:31b humaneval silent HumanEval/145
+  [3/14] gemma4:31b humaneval silent HumanEval/102
+  [4/14] gemma4:31b humaneval passed HumanEval/159
+  [5/14] gemma4:31b humaneval passed HumanEval/105
+  [6/14] gemma4:31b belebele_hrv echoed https://en.wikivoyage.org/wiki/Tornado_safety#2
+  [7/14] gemma4:31b belebele_hrv echoed https://en.wikivoyage.org/wiki/Travel_advisories#1
+  [8/14] gemma4:31b belebele_hrv echoed https://en.wikibooks.org/wiki/Wikijunior:Big_Book_
+  [9/14] gemma4:31b belebele_hrv correct https://en.wikinews.org/wiki/Spanish_football:_Sev
+  [10/14] gemma4:31b belebele_hrv correct https://en.wikinews.org/wiki/Leak_suggests_John_Ke
+  [11/14] gemma4:31b belebele_hrv wrong https://en.wikivoyage.org/wiki/First_and_business_
+  [12/14] gemma4:31b belebele_hrv wrong https://en.wikibooks.org/wiki/Coaching_Youth_Middl
+  [13/14] gemma4:31b belebele_eng echoed https://en.wikibooks.org/wiki/Cognitive_Psychology
+  [14/14] gemma4:31b belebele_eng echoed https://en.wikibooks.org/wiki/Wikijunior:Languages
+[capture] wrote ./results/examples/examples.json and examples.md

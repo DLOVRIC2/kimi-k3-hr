@@ -1,0 +1,392 @@
+[
+  {
+    "task": "humaneval",
+    "id": "HumanEval/35",
+    "category": "silent",
+    "prompt": "Complete this Python function. Reply with the complete function only, inside a single ```python code block. No explanation.\n\n```python\n\n\ndef max_element(l: list):\n    \"\"\"Return maximum element in the list.\n    >>> max_element([1, 2, 3])\n    3\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n```",
+    "signature": "\n\ndef max_element(l: list):\n    \"\"\"Return maximum element in the list.\n    >>> max_element([1, 2, 3])\n    3\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n",
+    "entry_point": "max_element",
+    "test": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate([1, 2, 3]) == 3\n    assert candidate([5, 3, -5, 2, -3, 3, 9, 0, 124, 1, -10]) == 124\n",
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "",
+        "gen_tokens": 0,
+        "prompt_tokens": 124,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 0.0,
+        "extracted_code": "\n\ndef max_element(l: list):\n    \"\"\"Return maximum element in the list.\n    >>> max_element([1, 2, 3])\n    3\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n",
+        "passed": false,
+        "reason": "AssertionError"
+      },
+      "gemma4:31b": {
+        "text": "```python\ndef max_element(l: list):\n    \"\"\"Return maximum element in the list.\n    >>> max_element([1, 2, 3])\n    3\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n    return max(l)\n```",
+        "gen_tokens": 100,
+        "prompt_tokens": 129,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 28.08,
+        "extracted_code": "def max_element(l: list):\n    \"\"\"Return maximum element in the list.\n    >>> max_element([1, 2, 3])\n    3\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n    return max(l)\n",
+        "passed": true,
+        "reason": "pass"
+      }
+    }
+  },
+  {
+    "task": "humaneval",
+    "id": "HumanEval/145",
+    "category": "silent",
+    "prompt": "Complete this Python function. Reply with the complete function only, inside a single ```python code block. No explanation.\n\n```python\n\ndef order_by_points(nums):\n    \"\"\"\n    Write a function which sorts the given list of integers\n    in ascending order according to the sum of their digits.\n    Note: if there are several items with similar sum of their digits,\n    order them based on their index in original list.\n\n    For example:\n    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n    >>> order_by_points([]) == []\n    \"\"\"\n```",
+    "signature": "\ndef order_by_points(nums):\n    \"\"\"\n    Write a function which sorts the given list of integers\n    in ascending order according to the sum of their digits.\n    Note: if there are several items with similar sum of their digits,\n    order them based on their index in original list.\n\n    For example:\n    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n    >>> order_by_points([]) == []\n    \"\"\"\n",
+    "entry_point": "order_by_points",
+    "test": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n    assert candidate([1234,423,463,145,2,423,423,53,6,37,3457,3,56,0,46]) == [0, 2, 3, 6, 53, 423, 423, 423, 1234, 145, 37, 46, 56, 463, 3457]\n    assert candidate([]) == []\n    assert candidate([1, -11, -32, 43, 54, -98, 2, -3]) == [-3, -32, -98, -11, 1, 2, 43, 54]\n    assert candidate([1,2,3,4,5,6,7,8,9,10,11]) == [1, 10, 2, 11, 3, 4, 5, 6, 7, 8, 9]\n    assert candidate([0,6,6,-76,-21,23,4]) == [-76, -21, 0, 4, 23, 6, 6]\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n\n",
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "",
+        "gen_tokens": 0,
+        "prompt_tokens": 157,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 0.0,
+        "extracted_code": "\ndef order_by_points(nums):\n    \"\"\"\n    Write a function which sorts the given list of integers\n    in ascending order according to the sum of their digits.\n    Note: if there are several items with similar sum of their digits,\n    order them based on their index in original list.\n\n    For example:\n    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n    >>> order_by_points([]) == []\n    \"\"\"\n",
+        "passed": false,
+        "reason": "AssertionError"
+      },
+      "gemma4:31b": {
+        "text": "```python\ndef order_by_points(nums):\n    \"\"\"\n    Write a function which sorts the given list of integers\n    in ascending order according to the sum of their digits.\n    Note: if there are several items with similar sum of their digits,\n    order them based on their index in original list.\n\n    For example:\n    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n    >>> order_by_points([]) == []\n    \"\"\"\n    def get_digit_sum(n):\n        return sum(int(d) for d in str(abs(n)))\n\n    # Python's sort is stable, so we only need to sort by the digit sum.\n    # The original index order will be preserved for items with equal sums.\n    return sorted(nums, key=get_digit_sum)\n```",
+        "gen_tokens": 216,
+        "prompt_tokens": 171,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 27.84,
+        "extracted_code": "def order_by_points(nums):\n    \"\"\"\n    Write a function which sorts the given list of integers\n    in ascending order according to the sum of their digits.\n    Note: if there are several items with similar sum of their digits,\n    order them based on their index in original list.\n\n    For example:\n    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n    >>> order_by_points([]) == []\n    \"\"\"\n    def get_digit_sum(n):\n        return sum(int(d) for d in str(abs(n)))\n\n    # Python's sort is stable, so we only need to sort by the digit sum.\n    # The original index order will be preserved for items with equal sums.\n    return sorted(nums, key=get_digit_sum)\n",
+        "passed": false,
+        "reason": "AssertionError"
+      }
+    }
+  },
+  {
+    "task": "humaneval",
+    "id": "HumanEval/102",
+    "category": "silent",
+    "prompt": "Complete this Python function. Reply with the complete function only, inside a single ```python code block. No explanation.\n\n```python\n\ndef choose_num(x, y):\n    \"\"\"This function takes two positive numbers x and y and returns the\n    biggest even integer number that is in the range [x, y] inclusive. If \n    there's no such number, then the function should return -1.\n\n    For example:\n    choose_num(12, 15) = 14\n    choose_num(13, 12) = -1\n    \"\"\"\n```",
+    "signature": "\ndef choose_num(x, y):\n    \"\"\"This function takes two positive numbers x and y and returns the\n    biggest even integer number that is in the range [x, y] inclusive. If \n    there's no such number, then the function should return -1.\n\n    For example:\n    choose_num(12, 15) = 14\n    choose_num(13, 12) = -1\n    \"\"\"\n",
+    "entry_point": "choose_num",
+    "test": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(12, 15) == 14\n    assert candidate(13, 12) == -1\n    assert candidate(33, 12354) == 12354\n    assert candidate(5234, 5233) == -1\n    assert candidate(6, 29) == 28\n    assert candidate(27, 10) == -1\n\n    # Check some edge cases that are easy to work out by hand.\n    assert candidate(7, 7) == -1\n    assert candidate(546, 546) == 546\n\n",
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "",
+        "gen_tokens": 0,
+        "prompt_tokens": 135,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 0.0,
+        "extracted_code": "\ndef choose_num(x, y):\n    \"\"\"This function takes two positive numbers x and y and returns the\n    biggest even integer number that is in the range [x, y] inclusive. If \n    there's no such number, then the function should return -1.\n\n    For example:\n    choose_num(12, 15) = 14\n    choose_num(13, 12) = -1\n    \"\"\"\n",
+        "passed": false,
+        "reason": "AssertionError"
+      },
+      "gemma4:31b": {
+        "text": "```python\ndef choose_num(x, y):\n    \"\"\"This function takes two positive numbers x and y and returns the\n    biggest even integer number that is in the range [x, y] inclusive. If \n    there's no such number, then the function should return -1.\n\n    For example:\n    choose_num(12, 15) = 14\n    choose_num(13, 12) = -1\n    \"\"\"\n    if x > y:\n        return -1\n    \n    # Start from the upper bound and go downwards to find the largest even number\n    for i in range(y, x - 1, -1):\n        if i % 2 == 0:\n            return i\n            \n    return -1\n```",
+        "gen_tokens": 178,
+        "prompt_tokens": 144,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 27.92,
+        "extracted_code": "def choose_num(x, y):\n    \"\"\"This function takes two positive numbers x and y and returns the\n    biggest even integer number that is in the range [x, y] inclusive. If \n    there's no such number, then the function should return -1.\n\n    For example:\n    choose_num(12, 15) = 14\n    choose_num(13, 12) = -1\n    \"\"\"\n    if x > y:\n        return -1\n    \n    # Start from the upper bound and go downwards to find the largest even number\n    for i in range(y, x - 1, -1):\n        if i % 2 == 0:\n            return i\n            \n    return -1\n",
+        "passed": true,
+        "reason": "pass"
+      }
+    }
+  },
+  {
+    "task": "humaneval",
+    "id": "HumanEval/159",
+    "category": "passed",
+    "prompt": "Complete this Python function. Reply with the complete function only, inside a single ```python code block. No explanation.\n\n```python\n\ndef eat(number, need, remaining):\n    \"\"\"\n    You're a hungry rabbit, and you already have eaten a certain number of carrots,\n    but now you need to eat more carrots to complete the day's meals.\n    you should return an array of [ total number of eaten carrots after your meals,\n                                    the number of carrots left after your meals ]\n    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.\n    \n    Example:\n    * eat(5, 6, 10) -> [11, 4]\n    * eat(4, 8, 9) -> [12, 1]\n    * eat(1, 10, 10) -> [11, 0]\n    * eat(2, 11, 5) -> [7, 0]\n    \n    Variables:\n    @number : integer\n        the number of carrots that you have eaten.\n    @need : integer\n        the number of carrots that you need to eat.\n    @remaining : integer\n        the number of remaining carrots thet exist in stock\n    \n    Constrain:\n    * 0 <= number <= 1000\n    * 0 <= need <= 1000\n    * 0 <= remaining <= 1000\n\n    Have fun :)\n    \"\"\"\n```",
+    "signature": "\ndef eat(number, need, remaining):\n    \"\"\"\n    You're a hungry rabbit, and you already have eaten a certain number of carrots,\n    but now you need to eat more carrots to complete the day's meals.\n    you should return an array of [ total number of eaten carrots after your meals,\n                                    the number of carrots left after your meals ]\n    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.\n    \n    Example:\n    * eat(5, 6, 10) -> [11, 4]\n    * eat(4, 8, 9) -> [12, 1]\n    * eat(1, 10, 10) -> [11, 0]\n    * eat(2, 11, 5) -> [7, 0]\n    \n    Variables:\n    @number : integer\n        the number of carrots that you have eaten.\n    @need : integer\n        the number of carrots that you need to eat.\n    @remaining : integer\n        the number of remaining carrots thet exist in stock\n    \n    Constrain:\n    * 0 <= number <= 1000\n    * 0 <= need <= 1000\n    * 0 <= remaining <= 1000\n\n    Have fun :)\n    \"\"\"\n",
+    "entry_point": "eat",
+    "test": "def check(candidate):\n\n    # Check some simple cases\n    assert True, \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate(5, 6, 10) == [11, 4], \"Error\"\n    assert candidate(4, 8, 9) == [12, 1], \"Error\"\n    assert candidate(1, 10, 10) == [11, 0], \"Error\"\n    assert candidate(2, 11, 5) == [7, 0], \"Error\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n    assert candidate(4, 5, 7) == [9, 2], \"Error\"\n    assert candidate(4, 5, 1) == [5, 0], \"Error\"\n\n",
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "Here is the code block:\n\n```python\n\ndef eat(number, need, remaining):\n    \"\"\"\n    You're a hungry rabbit, and you already have eaten a certain number of carrots,\n    but now you need to eat more carrots to complete the day's meals.\n    you should return an array of [ total number of eaten carrots after your meals,\n                                    the number of carrots left after your meals ]\n    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.\n    \n    Example:\n    * eat(5, 6, 10) -> [11, 4]\n    * eat(4, 8, 9) -> [12, 1]\n    * eat(1, 10, 10) -> [11, 0]\n    * eat(2, 11, 5) -> [7, 0]\n    \n    Variables:\n    @number : integer\n        the number of carrots that you have eaten.\n    @need : integer\n        the number of carrots that you need to eat.\n    @remaining : integer\n        the number of remaining carrots thet exist in stock\n    \n    Constrain:\n    * 0 <= number <= 1000\n    * 0 <= need <= 1000\n    * 0 <= remaining <= 1000\n\n    Have fun :)\n    \"\"\"\n    eaten = number + min(need, remaining)\n    left = max(remaining - need, 0)\n    return [eaten, left]\n```",
+        "gen_tokens": 311,
+        "prompt_tokens": 318,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.45,
+        "extracted_code": "def eat(number, need, remaining):\n    \"\"\"\n    You're a hungry rabbit, and you already have eaten a certain number of carrots,\n    but now you need to eat more carrots to complete the day's meals.\n    you should return an array of [ total number of eaten carrots after your meals,\n                                    the number of carrots left after your meals ]\n    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.\n    \n    Example:\n    * eat(5, 6, 10) -> [11, 4]\n    * eat(4, 8, 9) -> [12, 1]\n    * eat(1, 10, 10) -> [11, 0]\n    * eat(2, 11, 5) -> [7, 0]\n    \n    Variables:\n    @number : integer\n        the number of carrots that you have eaten.\n    @need : integer\n        the number of carrots that you need to eat.\n    @remaining : integer\n        the number of remaining carrots thet exist in stock\n    \n    Constrain:\n    * 0 <= number <= 1000\n    * 0 <= need <= 1000\n    * 0 <= remaining <= 1000\n\n    Have fun :)\n    \"\"\"\n    eaten = number + min(need, remaining)\n    left = max(remaining - need, 0)\n    return [eaten, left]\n",
+        "passed": true,
+        "reason": "pass"
+      },
+      "gemma4:31b": {
+        "text": "```python\ndef eat(number, need, remaining):\n    \"\"\"\n    You're a hungry rabbit, and you already have eaten a certain number of carrots,\n    but now you need to eat more carrots to complete the day's meals.\n    you should return an array of [ total number of eaten carrots after your meals,\n                                    the number of carrots left after your meals ]\n    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.\n    \n    Example:\n    * eat(5, 6, 10) -> [11, 4]\n    * eat(4, 8, 9) -> [12, 1]\n    * eat(1, 10, 10) -> [11, 0]\n    * eat(2, 11, 5) -> [7, 0]\n    \n    Variables:\n    @number : integer\n        the number of carrots that you have eaten.\n    @need : integer\n        the number of carrots that you need to eat.\n    @remaining : integer\n        the number of remaining carrots thet exist in stock\n    \n    Constrain:\n    * 0 <= number <= 1000\n    * 0 <= need <= 1000\n    * 0 <= remaining <= 1000\n\n    Have fun :)\n    \"\"\"\n    eaten_now = min(need, remaining)\n    return [number + eaten_now, remaining - eaten_now]\n```",
+        "gen_tokens": 344,
+        "prompt_tokens": 351,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 27.67,
+        "extracted_code": "def eat(number, need, remaining):\n    \"\"\"\n    You're a hungry rabbit, and you already have eaten a certain number of carrots,\n    but now you need to eat more carrots to complete the day's meals.\n    you should return an array of [ total number of eaten carrots after your meals,\n                                    the number of carrots left after your meals ]\n    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.\n    \n    Example:\n    * eat(5, 6, 10) -> [11, 4]\n    * eat(4, 8, 9) -> [12, 1]\n    * eat(1, 10, 10) -> [11, 0]\n    * eat(2, 11, 5) -> [7, 0]\n    \n    Variables:\n    @number : integer\n        the number of carrots that you have eaten.\n    @need : integer\n        the number of carrots that you need to eat.\n    @remaining : integer\n        the number of remaining carrots thet exist in stock\n    \n    Constrain:\n    * 0 <= number <= 1000\n    * 0 <= need <= 1000\n    * 0 <= remaining <= 1000\n\n    Have fun :)\n    \"\"\"\n    eaten_now = min(need, remaining)\n    return [number + eaten_now, remaining - eaten_now]\n",
+        "passed": true,
+        "reason": "pass"
+      }
+    }
+  },
+  {
+    "task": "humaneval",
+    "id": "HumanEval/105",
+    "category": "passed",
+    "prompt": "Complete this Python function. Reply with the complete function only, inside a single ```python code block. No explanation.\n\n```python\n\ndef by_length(arr):\n    \"\"\"\n    Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n    reverse the resulting array, and then replace each digit by its corresponding name from\n    \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n\n    For example:\n      arr = [2, 1, 1, 4, 5, 8, 2, 3]   \n            -> sort arr -> [1, 1, 2, 2, 3, 4, 5, 8] \n            -> reverse arr -> [8, 5, 4, 3, 2, 2, 1, 1]\n      return [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\n    \n      If the array is empty, return an empty array:\n      arr = []\n      return []\n    \n      If the array has any strange number ignore it:\n      arr = [1, -1 , 55] \n            -> sort arr -> [-1, 1, 55]\n            -> reverse arr -> [55, 1, -1]\n      return = ['One']\n    \"\"\"\n```",
+    "signature": "\ndef by_length(arr):\n    \"\"\"\n    Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n    reverse the resulting array, and then replace each digit by its corresponding name from\n    \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n\n    For example:\n      arr = [2, 1, 1, 4, 5, 8, 2, 3]   \n            -> sort arr -> [1, 1, 2, 2, 3, 4, 5, 8] \n            -> reverse arr -> [8, 5, 4, 3, 2, 2, 1, 1]\n      return [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\n    \n      If the array is empty, return an empty array:\n      arr = []\n      return []\n    \n      If the array has any strange number ignore it:\n      arr = [1, -1 , 55] \n            -> sort arr -> [-1, 1, 55]\n            -> reverse arr -> [55, 1, -1]\n      return = ['One']\n    \"\"\"\n",
+    "entry_point": "by_length",
+    "test": "def check(candidate):\n\n    # Check some simple cases\n    assert True, \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate([2, 1, 1, 4, 5, 8, 2, 3]) == [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"], \"Error\"\n    assert candidate([]) == [], \"Error\"\n    assert candidate([1, -1 , 55]) == ['One'], \"Error\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n    assert candidate([1, -1, 3, 2]) == [\"Three\", \"Two\", \"One\"]\n    assert candidate([9, 4, 8]) == [\"Nine\", \"Eight\", \"Four\"]\n\n",
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "```python\ndef by_length(arr):\n    \"\"\"\n    Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n    reverse the resulting array, and then replace each digit by its corresponding name from\n    \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n\n    For example:\n      arr = [2, 1, 1, 4, 5, 8, 2, 3]   \n            -> sort arr -> [1, 1, 2, 2, 3, 4, 5, 8] \n            -> reverse arr -> [8, 5, 4, 3, 2, 2, 1, 1]\n      return [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\n    \n      If the array is empty, return an empty array:\n      arr = []\n      return []\n    \n      If the array has any strange number ignore it:\n      arr = [1, -1 , 55] \n            -> sort arr -> [-1, 1, 55]\n            -> reverse arr -> [55, 1, -1]\n      return = ['One']\n    \"\"\"\n    # Filter integers between 1 and 9 inclusive\n    filtered = [x for x in arr if 1 <= x <= 9]\n    \n    # Sort the filtered integers\n    sorted_arr = sorted(filtered)\n    \n    # Reverse the sorted array\n    reversed_arr = sorted_arr[::-1]\n    \n    # Replace each digit by its corresponding name\n    names = [\"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\"]\n    result = [names[x - 1] for x in reversed_arr]\n    \n    return result\n```",
+        "gen_tokens": 400,
+        "prompt_tokens": 318,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.45,
+        "extracted_code": "def by_length(arr):\n    \"\"\"\n    Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n    reverse the resulting array, and then replace each digit by its corresponding name from\n    \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n\n    For example:\n      arr = [2, 1, 1, 4, 5, 8, 2, 3]   \n            -> sort arr -> [1, 1, 2, 2, 3, 4, 5, 8] \n            -> reverse arr -> [8, 5, 4, 3, 2, 2, 1, 1]\n      return [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\n    \n      If the array is empty, return an empty array:\n      arr = []\n      return []\n    \n      If the array has any strange number ignore it:\n      arr = [1, -1 , 55] \n            -> sort arr -> [-1, 1, 55]\n            -> reverse arr -> [55, 1, -1]\n      return = ['One']\n    \"\"\"\n    # Filter integers between 1 and 9 inclusive\n    filtered = [x for x in arr if 1 <= x <= 9]\n    \n    # Sort the filtered integers\n    sorted_arr = sorted(filtered)\n    \n    # Reverse the sorted array\n    reversed_arr = sorted_arr[::-1]\n    \n    # Replace each digit by its corresponding name\n    names = [\"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\"]\n    result = [names[x - 1] for x in reversed_arr]\n    \n    return result\n",
+        "passed": true,
+        "reason": "pass"
+      },
+      "gemma4:31b": {
+        "text": "```python\ndef by_length(arr):\n    names = {\n        1: \"One\", 2: \"Two\", 3: \"Three\", 4: \"Four\", 5: \"Five\",\n        6: \"Six\", 7: \"Seven\", 8: \"Eight\", 9: \"Nine\"\n    }\n    filtered = [x for x in arr if 1 <= x <= 9]\n    filtered.sort(reverse=True)\n    return [names[x] for x in filtered]\n```",
+        "gen_tokens": 119,
+        "prompt_tokens": 336,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 27.9,
+        "extracted_code": "def by_length(arr):\n    names = {\n        1: \"One\", 2: \"Two\", 3: \"Three\", 4: \"Four\", 5: \"Five\",\n        6: \"Six\", 7: \"Seven\", 8: \"Eight\", 9: \"Nine\"\n    }\n    filtered = [x for x in arr if 1 <= x <= 9]\n    filtered.sort(reverse=True)\n    return [names[x] for x in filtered]\n",
+        "passed": true,
+        "reason": "pass"
+      }
+    }
+  },
+  {
+    "task": "belebele_hrv",
+    "id": "https://en.wikivoyage.org/wiki/Tornado_safety#2",
+    "category": "echoed",
+    "prompt": "Passage:\nTornado je vrtlog zraka vrlo niskog tlaka, koji usisava okolni zrak prema unutra i gore. Stvaraju snažne vjetrove (često 100 – 200 milja/sat) i mogu podići teške predmete u zrak, noseći ih dok se tornado kreće. U početku su poput lijevaka koji se spuštaju iz olujnih oblaka, a zatim postaju „tornada“ kad dotaknu tlo.\n\nQuestion: Što je od navedenog točna osobina tornada?\n\n1. Uvijek stvaraju vjetrove od 100 do 200 milja na sat\n2. Često podižu teške predmete\n3. Postaju lijevci nakon što dodirnu tlo\n4. Vrte se u stupovima koji istiskuju zrak prema van\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 2,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "2",
+        "gen_tokens": 1,
+        "prompt_tokens": 270,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.48
+      },
+      "gemma4:31b": {
+        "text": "2",
+        "gen_tokens": 2,
+        "prompt_tokens": 246,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 53.26
+      }
+    }
+  },
+  {
+    "task": "belebele_hrv",
+    "id": "https://en.wikivoyage.org/wiki/Travel_advisories#1",
+    "category": "echoed",
+    "prompt": "Passage:\nAko zemlja u koju putujete dospije na popis zemalja za koje je izdano upozorenje, to može utjecati na vaše putno zdravstveno osiguranje ili osiguranje za otkazivanje putovanja. Možete se posavjetovati s drugim vladama osim svoje, no njihovi savjeti prilagođeni su njihovim građanima. Primjerice, američki građani na Bliskom istoku mogu se naći u drugačijim situacijama nego Europljani ili Arapi. Savjeti su kratak sažetak političke situacije u nekoj zemlji. Izneseni stavovi često su kratki, općeniti i previše pojednostavljeni u odnosu na detaljnije informacije dostupne drugdje.\n\nQuestion: Prema odlomku, gdje bi putnici trebali potražiti savjet u vezi s političkom situacijom u gradu koji je njihovo odredište?\n\n1. Od vlade u zemlji koju će posjetiti\n2. Iz stajališta predstavljenih u putnim upozorenjima\n3. Od građana zemlje koju će posjetiti\n4. Od vlastite vlade\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 4,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "Passage:\nAko zemlja u koju putujete dospije na popis zemalja za koje je izdano upozorenje, to može utjecati na vaše putno zdravstveno osiguranje ili osiguranje za otkazivanje putovanja. Možete se posavjetovati s drugim vladama osim svoje, no njihovi savjeti prilagođeni su njihovim građanima. Primjerice, američki građani na Bliskom istoku mogu se naći u drugačijim situacijama nego Europljani ili Arapi. Savjeti su kratak sažetak političke situacije u nekoj zemlji. Izneseni stavovi često su kratki, općeniti i previše pojednostavljeni u odnosu na detaljnije informacije dostupne drugdje.\n\nQuestion: Prema odlomku, gdje bi putnici trebali potražiti savjet u vezi s političkom situacij",
+        "gen_tokens": 256,
+        "prompt_tokens": 388,
+        "thinking_chars": 0,
+        "truncated": true,
+        "decode_tok_s": 5.43
+      },
+      "gemma4:31b": {
+        "text": "4",
+        "gen_tokens": 2,
+        "prompt_tokens": 299,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 52.29
+      }
+    }
+  },
+  {
+    "task": "belebele_hrv",
+    "id": "https://en.wikibooks.org/wiki/Wikijunior:Big_Book_of_Fun_Science_Experiments/Red_cabbage_indicator#2",
+    "category": "echoed",
+    "prompt": "Passage:\nTo se zove kemijski pH. Pokazatelj vam može biti sok crvenog kupusa. Rasol mijenja boju ovisno o tome koliko je kemikalija kiselinska ili bazična (lužnata). Vrijednost pH označava se količinom iona vodika (H u kratici pH) u testiranoj kemikaliji. Vodikovi ioni su protoni bez elektrona (budući da se atomi vodika sastoje od jednog protona i jednog elektrona).\n\nQuestion: Što je uklonjeno iz iona vodika?\n\n1. Protoni\n2. pH\n3. Bazično\n4. Elektroni\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 4,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "Passage:\nTo se zove kemijski pH. Pokazatelj vam može biti sok crvenog kupusa. Rasol mijenja boju ovisno o tome koliko je kemikalija kiselinska ili bazična (lužnata). Vrijednost pH označava se količinom iona vodika (H u kratici pH) u testiranoj kemikaliji. Vodikovi ioni su protoni bez elektrona (budući da se atomi vodika sastoje od jednog protona i jednog elektrona).\n\nQuestion: Što je uklonjeno iz iona vodika?\n\n1. Protoni\n2. pH\n3. Bazično\n4. Elektroni\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+        "gen_tokens": 206,
+        "prompt_tokens": 227,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.45
+      },
+      "gemma4:31b": {
+        "text": "4",
+        "gen_tokens": 2,
+        "prompt_tokens": 195,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 53.57
+      }
+    }
+  },
+  {
+    "task": "belebele_hrv",
+    "id": "https://en.wikinews.org/wiki/Spanish_football:_Sevilla_signs_Aleix_Vidal_from_FC_Barcelona#2",
+    "category": "correct",
+    "prompt": "Passage:\n28-godišnji Vidal došao je iz Seville u Barçu prije tri sezone. Vidal je za klub odigrao 49 utakmica otkako se preselio u glavni grad Katalonije.\n\nQuestion: Koliko je utakmica Vidal odigrao za Barçu?\n\n1. 49\n2. 39\n3. 3\n4. 29\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 1,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "1",
+        "gen_tokens": 1,
+        "prompt_tokens": 153,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.48
+      },
+      "gemma4:31b": {
+        "text": "1",
+        "gen_tokens": 2,
+        "prompt_tokens": 132,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 53.17
+      }
+    }
+  },
+  {
+    "task": "belebele_hrv",
+    "id": "https://en.wikinews.org/wiki/Leak_suggests_John_Kerry_will_recognise_Israel_as_Jewish_state#2",
+    "category": "correct",
+    "prompt": "Passage:\nDokument će se, prema informacijama koje su iscurile, odnositi na spor oko granica, za koje Palestina želi da budu utemeljene na granicama prije bliskoistočnog rata 1967. Druge teme o kojima se raspravljalo navodno uključuju buduću državu Jeruzalem koja je sveta obama narodima te problem Doline Jordana. Izrael zahtijeva kontinuiranu vojnu prisutnost tijekom deset godina nakon potpisivanja ugovora, a Palestinska samouprava slaže se s vojnom prisutnošću u trajanju od samo pet godina.\n\nQuestion: Koji od navedenih zahtjeva nije jedan od palestinskih zahtjeva?\n\n1. Granice utemeljene na predratnim uvjetima\n2. Kontinuirana vojna prisutnost u dolini Jordana\n3. Odgovori koji se tiču budućnosti Jeruzalema\n4. Petogodišnja vojna prisutnost u dolini Jordana\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 2,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "2",
+        "gen_tokens": 1,
+        "prompt_tokens": 334,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.41
+      },
+      "gemma4:31b": {
+        "text": "2",
+        "gen_tokens": 2,
+        "prompt_tokens": 269,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 53.13
+      }
+    }
+  },
+  {
+    "task": "belebele_hrv",
+    "id": "https://en.wikivoyage.org/wiki/First_and_business_class_flights#1",
+    "category": "wrong",
+    "prompt": "Passage:\nRazumije se da ćete moći letjeti prvom ili poslovnom klasom ako za tu privilegiju izdvojite podeblji svežanj novčanica (ili, još bolje, neka to za vas učini vaša firma). Međutim, to nije jeftino: općenito govoreći, očekujte ​​da će vas to koštati i do četiri puta više od uobičajene cijene sjedala ekonomske klase, to jest jedanaest puta više za prvi razred! Općenito govoreći, nema nikakvog smisla tražiti popuste za sjedala poslovne ili prve klase na izravnim letovima od točke A do točke B. Zrakoplovne tvrtke dobro znaju da je određena skupina putnika spremna platiti veliku svotu novca za privilegiju brzog i udobnog putovanja, pa u skladu s time i određuju cijene.\n\nQuestion: Prema odlomku, što je od navedenog najvjerojatniji način uštede na zrakoplovnim kartama poslovne ili prve klase?\n\n1. Karte plaća tvrtka\n2. Rezerviranje karate prve umjesto poslovne klase\n3. Rezerviranje leta prvom klasom koji nije izravan\n4. Pronalaženje popusta\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 1,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "3",
+        "gen_tokens": 1,
+        "prompt_tokens": 413,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.47
+      },
+      "gemma4:31b": {
+        "text": "3",
+        "gen_tokens": 2,
+        "prompt_tokens": 346,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 52.54
+      }
+    }
+  },
+  {
+    "task": "belebele_hrv",
+    "id": "https://en.wikibooks.org/wiki/Coaching_Youth_Middle_Distance_Runners/Nutrition#2",
+    "category": "wrong",
+    "prompt": "Passage:\nIspravne prehrambene navike same po sebi ne mogu stvoriti vrhunske izvedbe, no mogu značajno utjecati na opće zdravlje mladih sportaša. Održavanje zdravog i uravnoteženog unosa energije, učinkovite navike unosa tekućine i znanje o raznim aspektima uzimanja nadomjestaka prehrani sportašima može omogućiti bolju izvedbu i veće uživanje u sportu.\n\nQuestion: Prema odlomku, što se od navedenog ne predlaže kao način da mladi sportaši više uživaju u sportu?\n\n1. Ispravne prehrambene navike\n2. Dosljedna izvedba vrhunske razine\n3. Učinkovit unos tekućine\n4. Održavanje zdravog i uravnoteženog unosa energije\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 2,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "3",
+        "gen_tokens": 1,
+        "prompt_tokens": 293,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.37
+      },
+      "gemma4:31b": {
+        "text": "2",
+        "gen_tokens": 2,
+        "prompt_tokens": 243,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 53.05
+      }
+    }
+  },
+  {
+    "task": "belebele_eng",
+    "id": "https://en.wikibooks.org/wiki/Cognitive_Psychology_and_Cognitive_Neuroscience/Problem_Solving_from_an_Evolutionary_Perspective#2",
+    "category": "echoed",
+    "prompt": "Passage:\nConvergent thinking patterns are problem solving techniques that unite different ideas or fields to find a solution. The focus of this mindset is speed, logic and accuracy, also identification of facts, reapplying existing techniques, gathering information. The most important factor of this mindset is: there is only one correct answer. You only think of two answers, namely right or wrong. This type of thinking is associated with certain science or standard procedures. People with this type of thinking have logical thinking, are able to memorize patterns, solve problems and work on scientific tests.\n\nQuestion: According to the passage, which of following is not considered a focus of the convergent thinking mindset?\n\n1. Understanding that there is only one correct answer\n2. Taking one’s time\n3. Identifying facts\n4. Gathering information\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 2,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "Passage:\nConvergent thinking patterns are problem solving techniques that unite different ideas or fields to find a solution. The focus of this mindset is speed, logic and accuracy, also identification of facts, reapplying existing techniques, gathering information. The most important factor of this mindset is: there is only one correct answer. You only think of two answers, namely right or wrong. This type of thinking is associated with certain science or standard procedures. People with this type of thinking have logical thinking, are able to memorize patterns, solve problems and work on scientific tests.\n\nQuestion: According to the passage, which of following is not considered a focus of the convergent thinking mindset?\n\n1. Understanding that there is only one correct answer\n2. Taking one’s time\n3. Identifying facts\n4. Gathering information\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+        "gen_tokens": 196,
+        "prompt_tokens": 217,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.45
+      },
+      "gemma4:31b": {
+        "text": "2",
+        "gen_tokens": 2,
+        "prompt_tokens": 209,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 53.16
+      }
+    }
+  },
+  {
+    "task": "belebele_eng",
+    "id": "https://en.wikibooks.org/wiki/Wikijunior:Languages/Korean#1",
+    "category": "echoed",
+    "prompt": "Passage:\n\"Hangeul is the only purposely invented alphabet in popular daily use. The alphabet was invented in 1444 during the reign of King Sejong (1418 – 1450). King Sejong was the fourth king of the Joseon Dynasty and is one of the most highly regarded. He originally named the Hangeul alphabet Hunmin Jeongeum, which means \"\"the correct sounds for the instruction of the people\"\".\"\n\nQuestion: Which of the following is not an accurate fact about the Hangeul alphabet?\n\n1. It was invented at the beginning of King Sejong’s reign\n2. The alphabet’s original name was Hunan Jeongeum\n3. It was invented by Joseon Dynasty’s fourth king\n4. It was purposely invented\n\nAnswer with the number of the correct option only (1, 2, 3, or 4). Reply with a single digit and nothing else.",
+    "correct_answer": 1,
+    "outputs": {
+      "K3-REAP80-hr-code": {
+        "text": "4",
+        "gen_tokens": 1,
+        "prompt_tokens": 208,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 5.38
+      },
+      "gemma4:31b": {
+        "text": "2",
+        "gen_tokens": 2,
+        "prompt_tokens": 212,
+        "thinking_chars": 0,
+        "truncated": false,
+        "decode_tok_s": 52.53
+      }
+    }
+  }
+]

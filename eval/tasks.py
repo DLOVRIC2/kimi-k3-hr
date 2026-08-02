@@ -143,15 +143,32 @@ def belebele_id(row) -> str:
     return f"{row['link']}#{row['question_number']}"
 
 
+# An echo is a RESTATEMENT, so it cannot be shorter than a few words. Without a
+# floor, the containment test below matches any response short enough to occur
+# incidentally in the passage -- and the expected response here is a single
+# digit, which appears in most passages by chance.
+#
+# Measured: this misclassified 140 items across the sweep. For all three
+# comparators it was 100% of their reported echoes -- every one a bare correct
+# answer like '2', discarded as an echo and scored wrong. It suppressed
+# accuracy, suppressed response rate, and manufactured an echo rate for models
+# that never echoed once.
+_MIN_ECHO_CHARS = 20
+
+
 def _is_echo(text: str, prompt: str) -> bool:
     """Did the model repeat the prompt back instead of answering?
 
     A distinct failure mode from a wrong answer: the model never engaged with
     the question at all. Scoring it as merely "incorrect" hides that, so it is
-    counted separately. Observed at ~10% on K3 and gpt-oss:20b.
+    counted separately.
     """
     head = text.strip()[:60]
-    return bool(head) and (head.startswith("Passage:") or head[:40] in prompt[:200])
+    if not head:
+        return False
+    if head.startswith("Passage:"):
+        return True
+    return len(head) >= _MIN_ECHO_CHARS and head[:40] in prompt[:200]
 
 
 def score_belebele(backend, ds, log=print, ckpt: Checkpoint | None = None) -> dict:
