@@ -759,19 +759,106 @@ separate from the work of getting it right.**
 
 ---
 
+## Phase 11 — Validating the build, after publishing conclusions about it
+
+Everything so far rests on one 326 GiB artifact that had **never been structurally
+verified**. The toolchain ships `scripts/verify.py` for exactly this and we had not run
+it once — not before the pilot, not before the sweep, not before writing findings.
+
+### What it checks
+
+It works from the artifacts on disk without loading the model, so it costs minutes and
+no memory. Four checks: the quantization block is coherent, every mapped tensor exists,
+the emitted key set matches what `kimi_k3.Model` expects (no missing modules, no
+orphans), and — the one that matters — it dequantizes sampled experts from **our build**
+and compares them against the same experts dequantized from **the source**, following
+the keep map to know which source expert each output expert came from. For an mxfp4 tier
+the tolerance is exactly zero.
+
+### Result: PASSED, 0 failures, 0 warnings
+
+```
+[2] index            59 shards mapped == 59 on disk, 0 missing
+[3] module coverage  0 missing, 0 orphan, 4.653 bits/weight over 0.601T params
+[4] expert numerics  L50 e107<-src516  max|err| 0.000e+00  cos 1.00000
+                     ... 24 samples, layers 8-86, all of w1/w2/w3 ...
+  ok  mxfp4 experts bit-exact vs source (worst 0.0)
+```
+
+**This rules out the hypothesis that scared me most.** Pruning deletes experts and
+renumbers the survivors, and the router's rows must be reindexed to match. Get that
+wrong and expert 5 becomes expert 0 while the router still points at row 5: the model
+loads, attention and shared experts still work, it emits **fluent grammatical text**, and
+it routes every token to the wrong specialists. That is indistinguishable from our
+result by inspection — fluent Croatian prose, collapsed task scores. It is not what
+happened. The build contains exactly the experts the plan selected, bit-identical to
+Moonshot's originals.
+
+**What it does not rule out:** that the *plan* chose badly (a method result, not a bug),
+that the chat and generation path is still subtly wrong, or that 179 of 896 experts is
+simply too few. Check 4 samples 24 of ~50,000 expert tensors — but a remapping fault
+would be systematic, so 24 random samples spanning 78 layers would catch it with
+overwhelming probability.
+
+**Lesson:** this took under a minute and required no GPU, and it was available from the
+first day. We ran a 4-hour sweep, found eight bugs, and wrote three findings before
+asking whether the artifact was what we thought it was. **Verify the artifact before
+measuring it, not after publishing conclusions about it** — the check that bounds your
+blast radius is worth running even when you are confident, precisely because confidence
+is not evidence.
+
+### 29. The calibration corpus had no held-out tail
+
+**Symptom:** planning to run `scripts/perplexity.py` — the one quality measurement that
+bypasses the chat template, control tokens and answer parsing entirely, and which
+buckets by source so it yields **per-language** perplexity.
+**Cause:** it requires `--skip-tokens` past the calibration prefix, because
+`reap_calibrate.py` consumes the first `seqs x seqlen` tokens and scoring from offset 0
+grades a build on the data its own plan was fitted to. Calibration consumed **262,144**
+tokens (128 x 2048). The corpus tokenizes to **262,988**. That leaves **844 tokens** held
+out, against the 65,536 the harness wants.
+**Cause behind the cause:** the corpus was sized to what calibration would consume. That
+felt efficient — no wasted generation — and it silently foreclosed every held-out
+measurement for the entire project.
+**Fix:** not yet done. Needs a fresh corpus from the same `survey.yaml` recipe with
+non-overlapping documents.
+**Lesson:** **decide what you will hold out before you build the training set, not
+after.** An evaluation you cannot run is indistinguishable from one you chose not to,
+and this one would have been the strongest independent check available — the only
+measurement in the project that routes around the code most likely to be lying to us
+(#10 and #20 both lived there).
+
+### The baseline that cannot exist
+
+Worth stating plainly, because it bounds every claim in this repo: **no unpruned Kimi K3
+has ever produced a token on Apple Silicon.** The smallest full tier is 883 GB against
+512 GB of unified memory. The toolchain's own README says so — *"that is not a shortcut
+taken, it is arithmetically impossible on this hardware"* — and every number it publishes
+also comes from a pruned build.
+
+So "how much did pruning cost?" is not directly answerable here by anyone. The nearest
+available control is the published `Kimi-K3-REAP80-MLX-mxfp4-q8`: 179/896 experts and
+mxfp4+q8, **the same ratio and profile as ours**, differing only in calibration corpus
+(mixed 11 sources vs our Croatian+code). Running it through this harness separates
+"REAP at 80% is destructive" from "we broke it", and it validates our build pipeline
+against a third party's at the same time.
+
+---
+
 ## State of the repo (2026-08-02)
 
 **Complete and pushed.** `git status` clean, `origin/main` in sync.
 
 | | |
 |---|---|
-| `LOG.md` | this file — 28 entries, the build narrative |
+| `LOG.md` | this file — 29 entries, the build narrative |
 | `RESULTS.md` | the full sweep, findings, significance tests, limitations |
 | `README.md` | thesis, arms, setup, licence |
 | `results/full/` | the sweep as run — 13 per-item checkpoints (2,276 items), 5 memtraces, 5 result JSONs, arm logs |
 | `results/paired/` | English re-scored on the Croatian item set (#23), 53 min |
 | `results/rescored/` | corrected echo rule applied to both (#28), no GPU time |
 | `results/examples/` | full generations for 14 stratified items, K3 and gemma4:31b on identical prompts |
+| `build/` | the artifacts that define the model — tagged calibration saliency, prune plan, corpus, conversion and verification logs (17 MB) |
 | `results/pilot/` | the n=10 pilot that caught three harness bugs |
 | `results/invalid/` | quarantined runs — the capped-budget K3 arm and the pre-channel-fix thinking probe, kept because they are evidence for #20 and #21 |
 | `results/overlap-*.txt`, `retention-*.txt` | the expert-overlap matrix and the reference-mix counterfactual |

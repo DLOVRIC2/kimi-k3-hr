@@ -187,14 +187,47 @@ Rescoring required no GPU time. The checkpoint happens to store `raw` as exactly
 precisely the rule's input and the decision reproduces exactly. 253 items reclassified,
 230 correct answers recovered, none skipped.
 
+## Is the build sound?
+
+The conversion is verified. `scripts/verify.py` from the toolchain compares the artifact
+against the source without loading it: 59/59 shards mapped, zero missing tensors, zero
+orphans, and 24 sampled experts across layers 8–86 dequantized and compared against the
+same experts in the source — **all bit-exact, `cos 1.00000`, worst error 0.0** — with the
+expert remapping followed through the keep map. `build/verify.log` is committed.
+
+That rules out the failure this result would otherwise be most likely to be: a router
+renumbering fault, where surviving experts are reindexed but the router still points at
+the old rows. It produces a model that loads, generates fluent text, and routes every
+token to the wrong specialists — indistinguishable from our result by inspection. It is
+not what happened.
+
+It does **not** rule out that the chat and generation path is subtly wrong, and that is
+where the residual risk sits: the entire Finding 1 claim is about *generation* behaviour
+(the first token predicted is a stop token), which depends on the chat template, the
+control-token ids and the stop set. Two of this project's worst bugs lived in exactly
+that code. The measurement that would route around it is held-out perplexity, which
+bypasses the chat stack entirely and buckets by source language — but the calibration
+corpus was sized to what calibration consumed, leaving 844 held-out tokens against the
+65,536 required (`LOG.md` #29). It needs a fresh corpus first.
+
+**No unpruned baseline exists anywhere.** The smallest full K3 tier is 883 GB against 512
+GB of unified memory, so no unpruned tier has ever produced a token on this hardware —
+not here, and not in the toolchain that published these builds. "How much did pruning
+cost" is not directly answerable. The nearest control is the published
+`Kimi-K3-REAP80-MLX-mxfp4-q8` (179/896 experts, mxfp4+q8 — the same ratio and profile as
+ours, differing only in calibration corpus), run through this harness. That is
+limitation 1.
+
 ## Known limitations
 
-1. **No control arm.** `reap_subset --keep-sources code,en,zh,de,ru,fr` reproduces the
-   reference mix from the *same* calibration run. Without it, Finding 2 shows that this
-   build initiates in Croatian where general models do not, but cannot attribute that to
-   the Croatian calibration rather than to pruning damage generally. **This is the gap
-   between "a model" and "a claim,"** and it is now the single most valuable next
-   experiment.
+1. **No control arm.** Two candidates, and the external one is now clearly better.
+   `reap_subset --keep-sources code,en,zh,de,ru,fr` derives the reference mix from the
+   *same* calibration run — cheap, and it isolates the corpus effect, but it shares our
+   entire pipeline so it cannot tell us whether the absolute scores are real. Running
+   the **published `Kimi-K3-REAP80-MLX-mxfp4-q8`** through this harness tests both at
+   once: same prune ratio, same quantization profile, different corpus, third-party
+   build. If it scores ~85% here, the collapse is ours; if it scores ~40%, the collapse
+   is REAP's at this ratio. **This is the gap between "a model" and "a claim."**
 2. **`hr-heavy` and `hr-only` arms unbuilt**, so the language-plus-code question — does
    Croatian+code beat Croatian-only, as Chinese+code beat Chinese-only in the published
    ablation — is untested.
@@ -223,6 +256,6 @@ uv run eval/analysis.py           # regenerates every table above
 uv run eval/capture_examples.py   # full text for a stratified sample of items
 ```
 
-See `LOG.md` for the 28 bugs found on the way here, several of which produced
+See `LOG.md` for the 29 bugs found on the way here, several of which produced
 plausible-looking numbers that were wrong — including four found after the run finished,
 by building the tooling to reproduce its own results.

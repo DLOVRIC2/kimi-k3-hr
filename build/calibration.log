@@ -1,0 +1,106 @@
+[calib] per-source tokenization over 8 sources: ['code', 'de', 'en', 'fr', 'hr', 'ru', 'sr', 'zh']
+[calib] tokenized 262,988 tokens -> (128, 2048)
+[calib]   code            42,518 tokens (16.2%)
+[calib]   de              19,516 tokens (7.4%)
+[calib]   en              25,979 tokens (9.9%)
+[calib]   fr              10,591 tokens (4.0%)
+[calib]   hr              64,499 tokens (24.6%)
+[calib]   ru              32,539 tokens (12.4%)
+[calib]   sr              35,859 tokens (13.7%)
+[calib]   zh              30,643 tokens (11.7%)
+[reap] 93 layers (92 MoE), 896 experts, top-16
+[reap] calibration 128 x 2048 = 262,144 tokens, chunk 8 seq
+[reap] layer   0/92 dense   42.3s
+[reap] layer   1/92 MoE    43.5s  experts routed 896/896  S mean 1.7800e-03  elapsed   1.4m
+[reap] layer   2/92 MoE    57.5s  experts routed 896/896  S mean 1.6317e-03  elapsed   2.4m
+[reap] layer   3/92 MoE    62.5s  experts routed 896/896  S mean 2.4993e-03  elapsed   3.5m
+[reap] layer   4/92 MoE    46.9s  experts routed 896/896  S mean 4.6981e-03  elapsed   4.2m
+[reap] layer   5/92 MoE    47.4s  experts routed 895/896  S mean 6.5397e-03  elapsed   5.0m
+[reap] layer   6/92 MoE    47.8s  experts routed 896/896  S mean 1.0587e-02  elapsed   5.8m
+[reap] layer   7/92 MoE    43.5s  experts routed 896/896  S mean 1.1618e-02  elapsed   6.6m
+[reap] layer   8/92 MoE    49.0s  experts routed 896/896  S mean 1.2116e-02  elapsed   7.4m
+[reap] layer   9/92 MoE    48.3s  experts routed 896/896  S mean 1.2210e-02  elapsed   8.2m
+[reap] layer  10/92 MoE    48.0s  experts routed 896/896  S mean 1.1414e-02  elapsed   9.0m
+[reap] layer  11/92 MoE    41.9s  experts routed 896/896  S mean 1.9944e-02  elapsed   9.7m
+[reap] layer  12/92 MoE    48.9s  experts routed 891/896  S mean 1.2897e-04  elapsed  10.5m
+[reap] layer  13/92 MoE    50.2s  experts routed 896/896  S mean 5.2224e-03  elapsed  11.4m
+[reap] layer  14/92 MoE    49.0s  experts routed 896/896  S mean 3.3891e-03  elapsed  12.2m
+[reap] layer  15/92 MoE    52.4s  experts routed 896/896  S mean 5.5392e-03  elapsed  13.1m
+[reap] layer  16/92 MoE    47.4s  experts routed 896/896  S mean 6.2234e-03  elapsed  13.9m
+[reap] layer  17/92 MoE    47.6s  experts routed 896/896  S mean 4.9821e-03  elapsed  14.7m
+[reap] layer  18/92 MoE    47.6s  experts routed 896/896  S mean 5.1646e-03  elapsed  15.5m
+[reap] layer  19/92 MoE    41.7s  experts routed 896/896  S mean 6.6022e-03  elapsed  16.2m
+[reap] layer  20/92 MoE    47.7s  experts routed 896/896  S mean 8.0276e-03  elapsed  17.0m
+[reap] layer  21/92 MoE    47.8s  experts routed 896/896  S mean 1.2025e-02  elapsed  17.8m
+[reap] layer  22/92 MoE    48.1s  experts routed 896/896  S mean 6.9629e-03  elapsed  18.6m
+[reap] layer  23/92 MoE    42.4s  experts routed 896/896  S mean 7.8267e-03  elapsed  19.3m
+[reap] layer  24/92 MoE    55.4s  experts routed 895/896  S mean 2.6608e-04  elapsed  20.2m
+[reap] layer  25/92 MoE    49.7s  experts routed 896/896  S mean 5.9915e-04  elapsed  21.0m
+[reap] layer  26/92 MoE    49.1s  experts routed 896/896  S mean 7.4246e-04  elapsed  21.9m
+[reap] layer  27/92 MoE    54.3s  experts routed 896/896  S mean 1.1700e-03  elapsed  22.8m
+[reap] layer  28/92 MoE    49.3s  experts routed 896/896  S mean 1.2438e-03  elapsed  23.6m
+[reap] layer  29/92 MoE    49.3s  experts routed 896/896  S mean 1.7993e-03  elapsed  24.4m
+[reap] layer  30/92 MoE    49.1s  experts routed 896/896  S mean 2.3220e-03  elapsed  25.3m
+[reap] layer  31/92 MoE    53.5s  experts routed 896/896  S mean 4.1110e-03  elapsed  26.2m
+[reap] layer  32/92 MoE    47.6s  experts routed 896/896  S mean 6.3478e-03  elapsed  27.0m
+[reap] layer  33/92 MoE    49.5s  experts routed 896/896  S mean 6.7910e-03  elapsed  27.8m
+[reap] layer  34/92 MoE    49.6s  experts routed 896/896  S mean 8.5206e-03  elapsed  28.6m
+[reap] layer  35/92 MoE    51.7s  experts routed 896/896  S mean 1.3234e-02  elapsed  29.5m
+[reap] layer  36/92 MoE    56.5s  experts routed 895/896  S mean 5.1571e-04  elapsed  30.4m
+[reap] layer  37/92 MoE    47.9s  experts routed 894/896  S mean 1.0261e-03  elapsed  31.3m
+[reap] layer  38/92 MoE    45.3s  experts routed 896/896  S mean 1.5623e-03  elapsed  32.0m
+[reap] layer  39/92 MoE    38.8s  experts routed 896/896  S mean 1.8230e-03  elapsed  32.7m
+[reap] layer  40/92 MoE    45.1s  experts routed 896/896  S mean 2.6025e-03  elapsed  33.4m
+[reap] layer  41/92 MoE    44.8s  experts routed 896/896  S mean 3.4950e-03  elapsed  34.2m
+[reap] layer  42/92 MoE    45.0s  experts routed 895/896  S mean 4.6961e-03  elapsed  34.9m
+[reap] layer  43/92 MoE    38.8s  experts routed 896/896  S mean 4.7849e-03  elapsed  35.6m
+[reap] layer  44/92 MoE    45.6s  experts routed 896/896  S mean 7.2609e-03  elapsed  36.3m
+[reap] layer  45/92 MoE    45.9s  experts routed 896/896  S mean 9.4329e-03  elapsed  37.1m
+[reap] layer  46/92 MoE    45.9s  experts routed 896/896  S mean 1.3606e-02  elapsed  37.9m
+[reap] layer  47/92 MoE    39.0s  experts routed 895/896  S mean 2.0819e-02  elapsed  38.5m
+[reap] layer  48/92 MoE    46.7s  experts routed 896/896  S mean 2.6315e-04  elapsed  39.3m
+[reap] layer  49/92 MoE    46.3s  experts routed 896/896  S mean 1.1339e-03  elapsed  40.1m
+[reap] layer  50/92 MoE    46.5s  experts routed 895/896  S mean 1.2972e-03  elapsed  40.9m
+[reap] layer  51/92 MoE    39.9s  experts routed 896/896  S mean 2.7419e-03  elapsed  41.5m
+[reap] layer  52/92 MoE    46.6s  experts routed 896/896  S mean 6.0525e-03  elapsed  42.3m
+[reap] layer  53/92 MoE    46.7s  experts routed 896/896  S mean 9.5893e-03  elapsed  43.1m
+[reap] layer  54/92 MoE    46.3s  experts routed 896/896  S mean 9.3435e-03  elapsed  43.9m
+[reap] layer  55/92 MoE    39.9s  experts routed 896/896  S mean 1.1967e-02  elapsed  44.5m
+[reap] layer  56/92 MoE    46.5s  experts routed 896/896  S mean 1.7155e-02  elapsed  45.3m
+[reap] layer  57/92 MoE    46.8s  experts routed 896/896  S mean 1.8246e-02  elapsed  46.1m
+[reap] layer  58/92 MoE    46.7s  experts routed 896/896  S mean 1.8344e-02  elapsed  46.9m
+[reap] layer  59/92 MoE    39.8s  experts routed 896/896  S mean 2.8661e-02  elapsed  47.5m
+[reap] layer  60/92 MoE    47.3s  experts routed 896/896  S mean 5.0361e-03  elapsed  48.3m
+[reap] layer  61/92 MoE    47.2s  experts routed 896/896  S mean 6.7836e-03  elapsed  49.1m
+[reap] layer  62/92 MoE    46.6s  experts routed 895/896  S mean 6.9986e-03  elapsed  49.9m
+[reap] layer  63/92 MoE    40.6s  experts routed 896/896  S mean 8.1437e-03  elapsed  50.6m
+[reap] layer  64/92 MoE    47.3s  experts routed 896/896  S mean 7.9564e-03  elapsed  51.4m
+[reap] layer  65/92 MoE    47.3s  experts routed 896/896  S mean 9.1808e-03  elapsed  52.2m
+[reap] layer  66/92 MoE    47.1s  experts routed 896/896  S mean 9.6426e-03  elapsed  53.0m
+[reap] layer  67/92 MoE    40.0s  experts routed 896/896  S mean 9.7660e-03  elapsed  53.6m
+[reap] layer  68/92 MoE    46.3s  experts routed 896/896  S mean 1.1582e-02  elapsed  54.4m
+[reap] layer  69/92 MoE    46.9s  experts routed 896/896  S mean 1.1996e-02  elapsed  55.2m
+[reap] layer  70/92 MoE    47.1s  experts routed 896/896  S mean 1.2672e-02  elapsed  56.0m
+[reap] layer  71/92 MoE    40.3s  experts routed 896/896  S mean 1.3356e-02  elapsed  56.6m
+[reap] layer  72/92 MoE    47.7s  experts routed 896/896  S mean 5.7000e-03  elapsed  57.4m
+[reap] layer  73/92 MoE    45.5s  experts routed 896/896  S mean 7.0863e-03  elapsed  58.2m
+[reap] layer  74/92 MoE    45.5s  experts routed 896/896  S mean 7.8066e-03  elapsed  59.0m
+[reap] layer  75/92 MoE    39.4s  experts routed 896/896  S mean 1.0758e-02  elapsed  59.6m
+[reap] layer  76/92 MoE    45.5s  experts routed 896/896  S mean 8.9603e-03  elapsed  60.4m
+[reap] layer  77/92 MoE    45.5s  experts routed 896/896  S mean 1.0124e-02  elapsed  61.1m
+[reap] layer  78/92 MoE    45.5s  experts routed 896/896  S mean 1.0327e-02  elapsed  61.9m
+[reap] layer  79/92 MoE    39.4s  experts routed 896/896  S mean 9.6595e-03  elapsed  62.6m
+[reap] layer  80/92 MoE    45.5s  experts routed 896/896  S mean 1.6110e-02  elapsed  63.3m
+[reap] layer  81/92 MoE    45.3s  experts routed 894/896  S mean 1.8034e-02  elapsed  64.1m
+[reap] layer  82/92 MoE    45.6s  experts routed 896/896  S mean 2.4385e-02  elapsed  64.8m
+[reap] layer  83/92 MoE    39.7s  experts routed 896/896  S mean 3.3328e-02  elapsed  65.5m
+[reap] layer  84/92 MoE    46.3s  experts routed 896/896  S mean 7.2984e-03  elapsed  66.3m
+[reap] layer  85/92 MoE    47.6s  experts routed 896/896  S mean 7.4730e-03  elapsed  67.1m
+[reap] layer  86/92 MoE    47.6s  experts routed 896/896  S mean 9.3420e-03  elapsed  67.9m
+[reap] layer  87/92 MoE    41.7s  experts routed 896/896  S mean 2.0260e-02  elapsed  68.6m
+[reap] layer  88/92 MoE    47.5s  experts routed 896/896  S mean 2.1389e-02  elapsed  69.4m
+[reap] layer  89/92 MoE    47.3s  experts routed 896/896  S mean 2.8946e-02  elapsed  70.2m
+[reap] layer  90/92 MoE    47.2s  experts routed 896/896  S mean 1.8079e-02  elapsed  71.0m
+[reap] layer  91/92 MoE    42.0s  experts routed 896/896  S mean 3.1998e-02  elapsed  71.7m
+[reap] layer  92/92 MoE    42.0s  experts routed 896/896  S mean 3.8633e-02  elapsed  72.4m
+[reap] wrote ./build/survey.saliency.npz  (72.4 min)

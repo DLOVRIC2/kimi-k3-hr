@@ -1,0 +1,48 @@
+verifying $K3_BUILD
+
+[1] config
+  ok    model_type == kimi_k3
+  ok    quantization block present
+  ok    stale compressed-tensors block removed (mlx-lm would mis-read it as affine)
+        global: mode=mxfp4 bits=4 group_size=32  per-module overrides=1277
+  ok    kimi_k3.py bundled
+
+[2] index
+  ok    59 shards mapped == 59 on disk
+        total 0.3497 TB across 59 shards
+  ok    every mapped tensor present (0 missing)
+
+[3] module coverage
+  ok    no missing tensors (0): []
+  ok    no orphan tensors (0): []
+        1553 quantizable modules, 1553 carry scales, 1375 full-precision tensors
+        effective 4.653 bits/weight over 0.601T params
+
+[4] expert numerics vs source
+        L50  e107 <-src516  w1  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L34  e130 <-src661  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L52  e77  <-src346  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L46  e149 <-src755  w1  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L65  e35  <-src176  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L18  e24  <-src149  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L33  e136 <-src624  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L78  e37  <-src179  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L13  e18  <-src113  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L43  e120 <-src559  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L13  e90  <-src480  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L41  e156 <-src772  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L27  e141 <-src701  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L57  e133 <-src658  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L8   e140 <-src680  w1  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L12  e102 <-src514  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L86  e160 <-src821  w1  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L79  e126 <-src626  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L32  e83  <-src349  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L9   e48  <-src218  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L29  e61  <-src325  w1  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L70  e114 <-src568  w1  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L11  e81  <-src403  w2  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+        L63  e27  <-src124  w3  max|err| 0.000e+00  mean rel  0.000%  cos 1.00000
+  ok    mxfp4 experts bit-exact vs source (worst 0.0)
+
+PASSED  0 failures, 0 warnings

@@ -1,8 +1,15 @@
-build/
 models/
 .venv/
 __pycache__/
-*.npz
 *.safetensors
 eval/fixtures/*.txt
 !eval/fixtures/*.key.json
+
+# build/ holds the artifacts that DEFINE the model, and they total 17 MB.
+# Ignoring them left the eval reproducible but the build not: nobody could see
+# which experts this model kept, or check the arithmetic behind that choice.
+#
+# survey.saliency.npz is the expensive one -- the tagged calibration run, hours
+# of compute. Committing it means any arm (reference mix, hr-only, hr-heavy)
+# can be derived with reap_subset.py without recalibrating, which is the
+# "calibrate once, subset many" property the whole design rests on.
