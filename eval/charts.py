@@ -71,6 +71,18 @@ def pal(key: str) -> str:
     return PALETTE[THEME][key]
 
 
+def glyph(name: str) -> str:
+    """Separators and arrows, ASCII on the blog.
+
+    channels/blog/edit-calibrations.md: "UTF-8 only. Never Latin-1 middle dots
+    (0xb7). Prefer ASCII separators (' / ' or ',') in SVG text to avoid ?
+    glyphs in the browser." A middle dot that survives the file but dies in the
+    browser is the kind of defect nobody catches until it is published.
+    """
+    return {"sep": {"github": "  \u00b7  ", "blog": "  /  "},
+            "arrow": {"github": "\u2192", "blog": "->"}}[name][THEME]
+
+
 class _Ink(str):
     """Resolves to the current theme's ink colour at format time."""
     def __str__(self): return pal("ink")
@@ -177,7 +189,8 @@ def fig_size_vs_score() -> str:
         b.append(text(lx, py(pct) + dy, f"{SHORT[m]}", 12, c, anchor, weight="600",
                       role="label"))
         b.append(text(lx, py(pct) + dy + (-14 if above else 14),
-                      f"{pct:.1f}%  ·  {gb} GB", 11, INK, anchor, opacity=0.85))
+                      f"{pct:.1f}%{glyph('sep')}{gb} GB", 11, INK, anchor,
+                      opacity=0.85))
 
     k3 = next(p for p in pts if p[2] == "K3-REAP80-hr-code")
     gem = next(p for p in pts if p[2] == "gemma4-31b")
@@ -331,10 +344,10 @@ def fig_corrections() -> str:
                       role="label"))
         b.append(text(cx, H - 40, sub, 10, INK, "middle", opacity=0.75))
         if i < 2:
-            b.append(text(L + colw * (i + 1), T + 52, "→", 18, INK, "middle",
+            b.append(text(L + colw * (i + 1), T + 52, glyph("arrow"), 18, INK, "middle",
                           opacity=0.45))
     b.append(text(W / 2, H - 14,
-                  "significance: p=0.00064 ***  →  p=0.13 n.s.", 11,
+                  f"significance: p=0.00064 ***  {glyph('arrow')}  p=0.13 n.s.", 11,
                   INK, "middle", opacity=0.9))
     return svg(W, H, "\n".join(b), "Effect of the two corrections on the headline gap")
 
