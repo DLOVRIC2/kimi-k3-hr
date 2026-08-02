@@ -94,9 +94,31 @@ class ItemResult:
     echoed: bool = False
 
 
-def load_belebele(config: str, limit: int | None, seed: int):
+def load_belebele(config: str, limit: int | None, seed: int, ids: list[str] | None = None):
+    """Load a Belebele language config, optionally restricted to specific items.
+
+    `ids` exists because `shuffle(seed).select(range(limit))` does NOT select the
+    same items across languages. The seed fixes the PERMUTATION, not the outcome:
+    each language config stores its rows in a different source order, so position
+    k after shuffling is a different passage in hrv_Latn than in eng_Latn. Drawing
+    200 per language this way left only 48 items in common -- discarding the one
+    property that makes Belebele worth using.
+
+    Passing an explicit id set makes the two runs measure the same questions, so
+    the comparison can use McNemar instead of an unpaired proportion test.
+    """
     from datasets import load_dataset
     ds = load_dataset("facebook/belebele", config, split="test")
+    if ids is not None:
+        want = set(ids)
+        ds = ds.filter(lambda r: belebele_id(r) in want)
+        # Silently returning 47 of 200 items would produce a smaller, still
+        # plausible-looking result. Fail instead.
+        if len(ds) != len(want):
+            raise SystemExit(
+                f"asked for {len(want)} belebele items in {config}, found {len(ds)}; "
+                "the id set does not exist in this language config")
+        return ds
     if limit and limit < len(ds):
         ds = ds.shuffle(seed=seed).select(range(limit))
     return ds

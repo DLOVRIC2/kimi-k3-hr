@@ -35,6 +35,9 @@ def main() -> None:
     ap.add_argument("--label", default=None)
     ap.add_argument("--tasks", default="belebele_hrv,belebele_eng,humaneval")
     ap.add_argument("--limit-belebele", type=int, default=200)
+    ap.add_argument("--belebele-ids", default=None,
+                    help="file of belebele item ids, one per line; overrides "
+                         "--limit-belebele so every language scores the SAME items")
     ap.add_argument("--limit-humaneval", type=int, default=None)
     ap.add_argument("--seed", type=int, default=20260801)
     ap.add_argument("--thinking", action="store_true")
@@ -76,6 +79,10 @@ def main() -> None:
     }
 
     wanted = [t.strip() for t in a.tasks.split(",")]
+    item_ids = None
+    if a.belebele_ids:
+        item_ids = [l for l in pathlib.Path(a.belebele_ids).read_text().splitlines() if l.strip()]
+        print(f"[eval] restricted to {len(item_ids)} fixed belebele items", flush=True)
     t_start = time.time()
 
     for task in wanted:
@@ -88,7 +95,7 @@ def main() -> None:
 
         if task.startswith("belebele_"):
             lang = {"hrv": "hrv_Latn", "eng": "eng_Latn"}[task.split("_")[1]]
-            ds = T.load_belebele(lang, a.limit_belebele, a.seed)
+            ds = T.load_belebele(lang, a.limit_belebele, a.seed, ids=item_ids)
             res = T.score_belebele(backend, ds, ckpt=ckpt)
             print(f"    -> accuracy {res['accuracy']:.1%}  parse {res['parse_rate']:.1%}  n={res['n']}")
         elif task == "humaneval":
